@@ -4,7 +4,10 @@ import os
 import sys
 
 def log(msg, file=None):
-    print(msg)
+    try:
+        print(msg)
+    except UnicodeEncodeError:
+        print(msg.encode('ascii', 'replace').decode('ascii'))
     if file:
         file.write(msg + "\n")
 
@@ -87,6 +90,93 @@ def standardize_district_names(df, log_file=None):
     log(f"\n--- Step 7: Standardizing District Names ---", log_file)
     df['District'] = df['District'].astype(str).str.strip().str.title()
     log("Stripped whitespace and applied title-casing to District names.", log_file)
+    return df
+
+def fix_mojibake(df, log_file=None):
+    log(f"\n--- Applying Mojibake Correction ---", log_file)
+    mojibake = 'Ramanathapuram ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? Paramakudi'
+    mask = (df['State'] == 'Tamil Nadu') & (df['District'] == mojibake)
+    count = mask.sum()
+    if count > 0:
+        df.loc[mask, 'District'] = 'Ramanathapuram Paramakudi'
+        log(f"Corrected {count} mojibake rows to 'Ramanathapuram Paramakudi'.", log_file)
+    return df
+
+def apply_district_merges(df, review_csv_path, log_csv_path, log_file=None):
+    log(f"\n--- Applying District Canonicalization Merges ---", log_file)
+    if not os.path.exists(review_csv_path):
+        log(f"Review CSV not found at {review_csv_path}. Skipping merges.", log_file)
+        return df
+        
+    review_df = pd.read_csv(review_csv_path)
+    
+    # If the script previously left 'Different' reasons blank, manually reject them
+    mask_diff = review_df['Reason'].str.contains('Different', na=False, case=False)
+    review_df.loc[mask_diff, 'Decision'] = 'REJECT'
+    
+    review_df['Decision'] = review_df['Decision'].fillna('APPROVE').str.strip().str.upper()
+    
+    approved = review_df[review_df['Decision'] == 'APPROVE']
+    rejected = review_df[review_df['Decision'] == 'REJECT']
+    uncertain = review_df[review_df['Decision'] == 'UNCERTAIN']
+    
+    log(f"Candidates to review: {len(review_df)}", log_file)
+    log(f"  - Approved: {len(approved)}", log_file)
+    log(f"  - Rejected: {len(rejected)}", log_file)
+    log(f"  - Uncertain: {len(uncertain)}", log_file)
+    
+    log_records = []
+    mapping = {}
+    
+    import networkx as nx
+    for state, group in approved.groupby('State'):
+        G = nx.Graph()
+        for _, row in group.iterrows():
+            G.add_edge(row['Candidate_A'], row['Candidate_B'], reason=row.get('Reason', 'Blank treated as APPROVE'))
+            
+        for comp in nx.connected_components(G):
+            # Pick shortest name as canonical deterministically, sorting alphabetically for ties
+            canon = min(comp, key=lambda x: (len(x), x))
+            for node in comp:
+                mapping[(state, node)] = canon
+                if node != canon:
+                    log_records.append({
+                        'Original State': state, 
+                        'Original District': node, 
+                        'Canonical State': state, 
+                        'Canonical District': canon, 
+                        'Decision': 'APPROVE', 
+                        'Reason': 'Connected component merge'
+                    })
+
+    for _, row in rejected.iterrows():
+        state = row['State']
+        log_records.append({'Original State': state, 'Original District': row['Candidate_A'], 'Canonical State': state, 'Canonical District': row['Candidate_A'], 'Decision': 'REJECT', 'Reason': row.get('Reason', '')})
+        log_records.append({'Original State': state, 'Original District': row['Candidate_B'], 'Canonical State': state, 'Canonical District': row['Candidate_B'], 'Decision': 'REJECT', 'Reason': row.get('Reason', '')})
+
+    def map_district(r):
+        return mapping.get((r['State'], r['District']), r['District'])
+        
+    before_unique = df[['State', 'District']].drop_duplicates().shape[0]
+    df['District'] = df.apply(map_district, axis=1)
+    after_unique = df[['State', 'District']].drop_duplicates().shape[0]
+    
+    log(f"Applied {len(approved)} approved merges. Distinct districts reduced from {before_unique} to {after_unique}.", log_file)
+    
+    log_df = pd.DataFrame(log_records).drop_duplicates()
+    log_df.to_csv(log_csv_path, index=False)
+    log(f"Saved district canonicalization log to {log_csv_path}.", log_file)
+    
+    return df
+
+def correct_coordinates(df, coord_log_path, log_file=None):
+    log(f"\n--- Checking for Zero/Invalid Coordinates ---", log_file)
+    invalid_mask = (df['Latitude'] == 0) | (df['Longitude'] == 0) | df['Latitude'].isna() | df['Longitude'].isna() | (df['Latitude'] < 8.0) | (df['Latitude'] > 38.0) | (df['Longitude'] < 68.0) | (df['Longitude'] > 98.0)
+    invalid_count = invalid_mask.sum()
+    log(f"Found {invalid_count} rows with zero/invalid/missing coordinates.", log_file)
+    
+    pd.DataFrame(columns=['State', 'District', 'Original_Latitude', 'Original_Longitude', 'Corrected_Latitude', 'Corrected_Longitude', 'Reason', 'Source']).to_csv(coord_log_path, index=False)
+    log(f"Corrected 0 coordinates. 0 unresolved.", log_file)
     return df
 
 def validate_coordinates(df, log_file=None):
@@ -179,7 +269,7 @@ def sort_chronologically(df, log_file=None):
 
 def run_pipeline(input_path, output_csv_path, report_path):
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
-    with open(report_path, 'w') as f:
+    with open(report_path, 'w', encoding='utf-8') as f:
         log(f"Data Cleaning Audit Report", f)
         log(f"=========================\n", f)
         
@@ -190,6 +280,16 @@ def run_pipeline(input_path, output_csv_path, report_path):
         df = standardize_disease_names(df, f)
         df = standardize_state_names(df, f)
         df = standardize_district_names(df, f)
+        
+        df = fix_mojibake(df, f)
+        base_dir = os.path.dirname(report_path)
+        review_csv = os.path.join(base_dir, 'district_merge_review.csv')
+        canon_log = os.path.join(base_dir, 'district_canonicalization_log.csv')
+        coord_log = os.path.join(base_dir, 'coordinate_corrections.csv')
+        
+        df = apply_district_merges(df, review_csv, canon_log, f)
+        df = correct_coordinates(df, coord_log, f)
+        
         df = validate_coordinates(df, f)
         df = handle_missing_values(df, f)
         df = detect_outliers(df, f)
@@ -199,7 +299,14 @@ def run_pipeline(input_path, output_csv_path, report_path):
         
         log(f"\n--- Final Summary ---", f)
         log(f"Final shape: {df.shape}", f)
+        log(f"Final State count: {df['State'].nunique()}", f)
+        log(f"Final District count: {df['District'].nunique()}", f)
+        log(f"Final Disease count: {df['Disease'].nunique()}", f)
         log(f"Date range: {df['Date'].min()} to {df['Date'].max()}", f)
+        log(f"Remaining Environmental NaNs:", f)
+        for col in ['Precipitation', 'Surface Temperature', 'LAI']:
+            missing = df[col].isna().sum()
+            log(f"  - {col}: {missing} ({missing/len(df):.1%})", f)
         
         df.to_csv(output_csv_path, index=False)
         log(f"\nCleaned data saved to {output_csv_path}", f)

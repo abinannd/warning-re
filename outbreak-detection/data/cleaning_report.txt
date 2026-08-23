@@ -23,6 +23,20 @@ Stripped whitespace and applied title-casing to State names.
 --- Step 7: Standardizing District Names ---
 Stripped whitespace and applied title-casing to District names.
 
+--- Applying Mojibake Correction ---
+
+--- Applying District Canonicalization Merges ---
+Candidates to review: 54
+  - Approved: 51
+  - Rejected: 3
+  - Uncertain: 0
+Applied 51 approved merges. Distinct districts reduced from 786 to 743.
+Saved district canonicalization log to c:\BRAIN-STORM\warning-re\outbreak-detection\data\district_canonicalization_log.csv.
+
+--- Checking for Zero/Invalid Coordinates ---
+Found 0 rows with zero/invalid/missing coordinates.
+Corrected 0 coordinates. 0 unresolved.
+
 --- Step 8: Validating Coordinates ---
 All coordinates are within valid bounds.
 
@@ -34,7 +48,7 @@ Left missing values in 'Precipitation', 'Surface Temperature', and 'LAI' as NaN 
 --- Step 10: Detecting Outliers / Impossible Values ---
 
 --- Step 11: Converting to Weekly Grain ---
-Aggregated data to 8098 rows. Grouping by: ['State', 'District', 'Disease', 'ISO_Year', 'ISO_Week']
+Aggregated data to 8090 rows. Grouping by: ['State', 'District', 'Disease', 'ISO_Year', 'ISO_Week']
 Aggregation strategy: Cases and Deaths summed. Environmental variables and coordinates averaged.
 
 --- Step 12: Checking for Duplicate Week Combos ---
@@ -44,7 +58,14 @@ Validation passed: No duplicate State+District+Disease+Week rows.
 Sorted data chronologically.
 
 --- Final Summary ---
-Final shape: (8098, 13)
+Final shape: (8090, 13)
+Final State count: 36
+Final District count: 739
+Final Disease count: 9
 Date range: 2009-05-04 00:00:00 to 2022-06-29 00:00:00
+Remaining Environmental NaNs:
+  - Precipitation: 124 (1.5%)
+  - Surface Temperature: 815 (10.1%)
+  - LAI: 1904 (23.5%)
 
 Cleaned data saved to c:\BRAIN-STORM\warning-re\outbreak-detection\data\cleaned_weekly_data.csv

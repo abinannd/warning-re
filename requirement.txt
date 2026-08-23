@@ -1,0 +1,987 @@
+key factor: ONLY ONE STEP A TIME ACCORDING TO THE INSTRUCTIONS
+
+AI EARLY OUTBREAK DETECTION & SOURCE LOCALIZATION SYSTEM
+=========================================================
+
+PROJECT OBJECTIVE
+-----------------
+Build an AI system that:
+
+1. Detects disease outbreaks from historical disease-surveillance data.
+2. Identifies the likely geographic origin/source of an outbreak.
+3. Tracks the geographic spread/intensity of the outbreak.
+4. Generates data for a geographic heat map.
+5. Provides the results through a FastAPI backend.
+6. Displays the results through a frontend/dashboard.
+
+IMPORTANT:
+This project is NOT primarily a disease-risk prediction system.
+The main objective is OUTBREAK DETECTION + SOURCE LOCALIZATION + HEAT MAP.
+
+
+=========================================================
+1. DATASET
+=========================================================
+
+Primary dataset:
+Final_data.csv
+
+Expected important fields:
+
+- State
+- District
+- Disease
+- Cases
+- Deaths
+- Date / Day / Month / Year
+- Latitude
+- Longitude
+- Surface Temperature
+- Precipitation
+- LAI
+
+Basic data hierarchy:
+
+State
+  ↓
+District
+  ↓
+Disease
+  ↓
+Week
+
+
+=========================================================
+2. DATA PREPROCESSING
+=========================================================
+
+Required preprocessing:
+
+- Remove duplicate records.
+- Standardize disease names.
+- Standardize state names.
+- Standardize district names.
+- Handle missing values.
+- Convert dates into proper datetime format.
+- Sort records chronologically.
+- Convert data to a consistent weekly representation.
+- Validate latitude and longitude.
+- Detect impossible/outlier values.
+- Check duplicate State + District + Disease + Week combinations.
+- Verify that geographic coordinates are valid.
+
+The data must be ordered chronologically because this is a
+time-dependent outbreak detection problem.
+
+
+=========================================================
+3. FEATURE ENGINEERING
+=========================================================
+
+Create historical disease features for each:
+
+State + District + Disease
+
+Case-history features:
+
+- cases_lag_1
+- cases_lag_2
+- cases_lag_3
+- cases_lag_4
+
+Rolling features:
+
+- rolling_mean_4
+- rolling_mean_8
+- rolling_std_4
+- rolling_std_8
+
+Environmental features:
+
+- temperature
+- precipitation
+- LAI
+
+Possible environmental lag features:
+
+- temperature_lag_1
+- precipitation_lag_1
+- LAI_lag_1
+
+Other useful features:
+
+- week_of_year
+- month
+- seasonal indicators
+- recent case growth
+- death trends
+- geographic coordinates
+
+
+=========================================================
+4. MAIN TASK — OUTBREAK DETECTION
+=========================================================
+
+The first ML task is:
+
+"Is an outbreak occurring in this location for this disease?"
+
+This is NOT simply a generic risk prediction task.
+
+The system should identify abnormal disease activity that corresponds
+to a genuine historical outbreak.
+
+Potential models:
+
+1. Random Forest
+2. XGBoost
+3. MLP (Multi-Layer Perceptron)
+
+Random Forest should be used as a strong baseline.
+
+XGBoost can be used as another tabular ML comparison.
+
+MLP can be used as the actual neural-network model.
+
+IMPORTANT:
+Random Forest is NOT a neural network.
+
+Random Forest = ensemble of decision trees.
+MLP = neural network.
+
+
+=========================================================
+5. OUTBREAK TARGET
+=========================================================
+
+Define a reproducible outbreak label.
+
+Example concept:
+
+Historical disease activity
+        ↓
+Identify sustained/meaningful increase
+        ↓
+Define outbreak episode
+        ↓
+Create outbreak label
+
+The outbreak definition must be established independently of
+the model predictions.
+
+Do NOT define an outbreak as:
+
+"Whatever the model detects."
+
+That would cause circular evaluation.
+
+The exact outbreak definition should be documented and applied
+consistently to the dataset.
+
+
+=========================================================
+6. TIME-BASED TRAINING
+=========================================================
+
+Do NOT randomly shuffle the entire dataset for train/test splitting.
+
+Use chronological splitting.
+
+Example:
+
+2009 ───────── 2018 | 2019 ─ 2020 | 2021 ─ 2022
+       TRAINING      | VALIDATION  |    TEST
+
+The exact years can be adjusted according to the dataset.
+
+MAIN RULE:
+
+The model must never use future information to predict the past.
+
+Avoid data leakage.
+
+For example:
+
+Week t
+  ↓
+Only information available up to Week t
+  ↓
+Predict outbreak at Week t+1 / future horizon
+
+
+=========================================================
+7. MODEL 1 — OUTBREAK DETECTOR
+=========================================================
+
+Recommended experiments:
+
+Model A:
+Random Forest
+
+Model B:
+XGBoost
+
+Model C:
+MLP Neural Network
+
+Compare their performance.
+
+Do not assume the neural network will automatically perform better.
+
+Possible output:
+
+{
+    "outbreak": true
+}
+
+or:
+
+{
+    "outbreak_probability": 0.91
+}
+
+
+=========================================================
+8. MODEL 2 — SOURCE LOCALIZATION
+=========================================================
+
+After an outbreak is detected, the next question is:
+
+"Where did the outbreak most likely originate?"
+
+Do NOT simply assume:
+
+District with highest cases = source.
+
+The location with the most cases could be a secondary amplification
+site rather than the original source.
+
+Consider:
+
+- Temporal precedence
+- Case growth
+- Geographic proximity
+- Neighboring-district propagation
+- Environmental similarity
+- Disease-specific patterns
+- Timing of first significant increase
+- Spread from one district to surrounding districts
+
+
+=========================================================
+9. SOURCE DETECTION APPROACH
+=========================================================
+
+Initially, use a source-ranking approach rather than immediately
+building a complicated second neural network.
+
+For every affected district, calculate a source score using factors
+such as:
+
+- Temporal precedence
+- Case-growth strength
+- Spatial relationship
+- Propagation pattern
+- Environmental similarity
+
+Example output:
+
+1. District A → Source score: 0.87
+2. District B → Source score: 0.64
+3. District C → Source score: 0.42
+
+The system can then report:
+
+Likely source:
+District A
+
+Confidence/source score:
+0.87
+
+IMPORTANT:
+Call this "likely source" or "source candidate", not a confirmed
+epidemiological source unless the available evidence supports that.
+
+
+=========================================================
+10. OUTBREAK SPREAD ANALYSIS
+=========================================================
+
+After identifying the outbreak and likely source, analyze how it
+spreads geographically.
+
+Example:
+
+Week 1:
+District A → first major increase
+
+Week 2:
+District B → increase
+District C → increase
+
+Week 3:
+District D → increase
+
+Possible representation:
+
+District A
+   ↓
+District B ───→ District D
+   ↓
+District C
+
+This creates a temporal-spatial outbreak progression.
+
+
+=========================================================
+11. HEAT MAP
+=========================================================
+
+Generate geographic information for the frontend.
+
+Each district/location can contain:
+
+- Latitude
+- Longitude
+- Cases
+- Outbreak score
+- Source score
+- Detection date
+- Week
+- Disease
+- Spread intensity
+
+Example:
+
+{
+    "district": "Kannur",
+    "latitude": 11.8745,
+    "longitude": 75.3704,
+    "cases": 142,
+    "outbreak_score": 0.91,
+    "source_score": 0.72
+}
+
+The frontend can use this information to generate a geographic
+heat map.
+
+
+=========================================================
+12. FINAL ML PIPELINE
+=========================================================
+
+Final_data.csv
+      ↓
+Data Cleaning
+      ↓
+Feature Engineering
+      ↓
+Time-Based Train/Validation/Test Split
+      ↓
+      ┌───────────────────────────────┐
+      │                               │
+      ↓                               ↓
+Outbreak Detection              Source Localization
+      │                               │
+      ↓                               ↓
+Random Forest                   Source Ranking
+XGBoost                         / Spatial Analysis
+MLP
+      │                               │
+      └───────────────┬───────────────┘
+                      ↓
+              Outbreak Event
+                      ↓
+             Geographic Analysis
+                      ↓
+                Heat Map Data
+                      ↓
+                   FastAPI
+                      ↓
+                  Frontend
+
+
+=========================================================
+13. FASTAPI BACKEND
+=========================================================
+
+FastAPI should serve the trained models and outbreak results.
+
+The API should NOT train the model every time a request is made.
+
+Correct architecture:
+
+Server starts
+    ↓
+Load trained model
+    ↓
+Wait for request
+    ↓
+Receive input
+    ↓
+Preprocess input
+    ↓
+Run inference
+    ↓
+Return result
+
+
+=========================================================
+14. RECOMMENDED API ENDPOINTS
+=========================================================
+
+Health check:
+
+GET /health
+
+Purpose:
+Check whether the backend is running.
+
+----------------------------------------
+
+Outbreak detection:
+
+POST /detect-outbreak
+
+Purpose:
+Submit data and determine whether an outbreak is detected.
+
+----------------------------------------
+
+All detected outbreaks:
+
+GET /outbreaks
+
+Purpose:
+Return detected outbreak events.
+
+----------------------------------------
+
+Specific outbreak:
+
+GET /outbreak/{id}
+
+Purpose:
+Return detailed information about an outbreak.
+
+----------------------------------------
+
+Source:
+
+GET /outbreak/{id}/source
+
+Purpose:
+Return likely source/candidate locations.
+
+----------------------------------------
+
+Heat map:
+
+GET /outbreak/{id}/heatmap
+
+Purpose:
+Return geographic outbreak intensity/location data for the
+frontend.
+
+
+=========================================================
+15. EXAMPLE API OUTPUT
+=========================================================
+
+Example outbreak response:
+
+{
+    "outbreak": true,
+    "disease": "Dengue",
+    "state": "Kerala",
+    "detected_date": "2022-07-15",
+    "affected_districts": 8
+}
+
+
+Example source response:
+
+{
+    "likely_source": "District A",
+    "source_score": 0.87,
+    "candidates": [
+        {
+            "district": "District A",
+            "score": 0.87
+        },
+        {
+            "district": "District B",
+            "score": 0.64
+        },
+        {
+            "district": "District C",
+            "score": 0.42
+        }
+    ]
+}
+
+
+Example heat-map response:
+
+{
+    "outbreak_id": 123,
+    "locations": [
+        {
+            "district": "District A",
+            "latitude": 11.87,
+            "longitude": 75.37,
+            "intensity": 0.91
+        },
+        {
+            "district": "District B",
+            "latitude": 11.95,
+            "longitude": 75.45,
+            "intensity": 0.72
+        }
+    ]
+}
+
+
+=========================================================
+16. PROJECT STRUCTURE
+=========================================================
+
+project/
+│
+├── data/
+│   └── Final_data.csv
+│
+├── preprocessing/
+│   ├── cleaning.py
+│   └── feature_engineering.py
+│
+├── models/
+│   ├── random_forest.py
+│   ├── xgboost_model.py
+│   ├── neural_network.py
+│   ├── train.py
+│   ├── predict.py
+│   └── trained_model.pkl
+│
+├── outbreak/
+│   ├── detector.py
+│   ├── source_localization.py
+│   └── spread_analysis.py
+│
+├── evaluation/
+│   ├── evaluate.py
+│   └── historical_replay.py
+│
+├── api/
+│   ├── main.py
+│   ├── routes/
+│   │   ├── outbreak.py
+│   │   ├── source.py
+│   │   └── heatmap.py
+│   ├── schemas/
+│   │   └── outbreak.py
+│   └── services/
+│       └── model_service.py
+│
+├── frontend/
+│   └── ...
+│
+├── tests/
+│
+├── requirements.txt
+└── README.md
+
+
+=========================================================
+17. EVALUATION
+=========================================================
+
+Evaluate the system on historical outbreaks.
+
+Important metrics:
+
+OUTBREAK DETECTION:
+- Precision
+- Recall
+- F1-score
+- Detection lead time
+- False alarm rate
+
+SOURCE LOCALIZATION:
+- Top-1 source accuracy
+- Top-3 source accuracy
+- Distance between predicted source and reference source
+- Temporal correctness
+- Geographic localization error
+
+SPATIAL OUTPUT:
+- Correct affected districts
+- Geographic spread consistency
+- Heat-map correspondence with historical outbreak data
+
+
+=========================================================
+18. HISTORICAL OUTBREAK REPLAY
+=========================================================
+
+A particularly important evaluation method:
+
+Take historical data and replay it chronologically.
+
+Example:
+
+Historical outbreak:
+Week 10 → initial increase
+Week 11 → expansion
+Week 12 → major outbreak
+Week 13 → peak
+
+Replay the data:
+
+Week 10
+  ↓
+System processes information available at Week 10
+
+Week 11
+  ↓
+System updates its detection
+
+Week 12
+  ↓
+System identifies outbreak
+
+Then compare the system's result with what actually happened.
+
+This helps evaluate whether the system could have detected the outbreak
+using information that would genuinely have been available at that time.
+
+
+=========================================================
+19. DATABASE
+=========================================================
+
+NOT REQUIRED for the first prototype.
+
+Initial version:
+
+CSV
+ ↓
+Python
+ ↓
+ML
+ ↓
+FastAPI
+ ↓
+Frontend
+
+Later, PostgreSQL can be added for:
+
+- Outbreak records
+- Predictions
+- Alerts
+- Historical data
+- Users
+- Dashboard queries
+
+
+=========================================================
+20. FRONTEND
+=========================================================
+
+The dashboard should eventually show:
+
+- India map
+- State/district selection
+- Disease selection
+- Detected outbreaks
+- Likely source
+- Source confidence/score
+- Affected districts
+- Outbreak timeline
+- Geographic spread
+- Heat map
+- Historical cases
+- Environmental information
+
+
+Example dashboard:
+
+--------------------------------------------------
+       AI OUTBREAK DETECTION SYSTEM
+--------------------------------------------------
+
+Disease: Dengue
+State: Kerala
+Outbreak: DETECTED
+
+Likely Source:
+District A
+
+Source Score:
+87%
+
+Detection:
+Week 32
+
+Affected Districts:
+8
+
+              [ HEAT MAP ]
+
+        🔴 Source
+       🟠 High intensity
+       🟡 Moderate
+       🟢 Low
+
+Spread:
+District A → B → C → D
+--------------------------------------------------
+
+
+=========================================================
+21. GIT REQUIREMENTS
+=========================================================
+
+COMMIT:
+
+- Python source code
+- API source code
+- Model training code
+- Preprocessing code
+- Evaluation code
+- Tests
+- requirements.txt
+- Configuration templates
+
+IGNORE:
+
+- .venv/
+- __pycache__/
+- *.pyc
+- .env
+- Secrets/API keys
+- Temporary files
+
+For large model files:
+
+Use Git LFS or a model-hosting service instead of committing
+large binary files directly to normal Git.
+
+
+=========================================================
+22. FASTAPI KNOWLEDGE REQUIRED
+=========================================================
+
+Learn:
+
+1. FastAPI()
+2. GET
+3. POST
+4. HTTP
+5. JSON
+6. Request bodies
+7. Pydantic
+8. Response models
+9. HTTP status codes
+10. Error handling
+11. Uvicorn
+12. /docs
+13. CORS
+14. Loading ML models
+15. Connecting API → ML inference
+16. API testing
+
+
+=========================================================
+23. ML KNOWLEDGE REQUIRED
+=========================================================
+
+Learn:
+
+1. Pandas
+2. NumPy
+3. Data cleaning
+4. Feature engineering
+5. Train/validation/test splitting
+6. Time-series data handling
+7. Random Forest
+8. XGBoost
+9. Neural networks / MLP
+10. Classification
+11. Model evaluation
+12. Preventing data leakage
+13. Model serialization
+14. Inference
+
+
+=========================================================
+24. RECOMMENDED DEVELOPMENT ORDER
+=========================================================
+
+PHASE 1 — DATA
+    ↓
+Clean Final_data.csv
+    ↓
+Validate data
+    ↓
+Create weekly records
+
+PHASE 2 — FEATURE ENGINEERING
+    ↓
+Create lag features
+    ↓
+Create rolling features
+    ↓
+Create environmental features
+    ↓
+Create temporal features
+
+PHASE 3 — OUTBREAK DEFINITION
+    ↓
+Create reproducible historical outbreak labels
+    ↓
+Validate outbreak episodes
+
+PHASE 4 — OUTBREAK ML
+    ↓
+Random Forest
+    ↓
+XGBoost
+    ↓
+MLP Neural Network
+    ↓
+Compare models
+
+PHASE 5 — SOURCE LOCALIZATION
+    ↓
+Analyze outbreak progression
+    ↓
+Calculate source candidates
+    ↓
+Rank likely sources
+    ↓
+Validate against historical outbreaks
+
+PHASE 6 — SPATIAL ANALYSIS
+    ↓
+Combine district coordinates
+    ↓
+Track outbreak spread
+    ↓
+Generate heat-map data
+
+PHASE 7 — EVALUATION
+    ↓
+Historical outbreak replay
+    ↓
+Detection performance
+    ↓
+Source localization performance
+    ↓
+False alarms
+    ↓
+Lead time
+    ↓
+Geographic error
+
+PHASE 8 — FASTAPI
+    ↓
+Build /health
+    ↓
+Build /detect-outbreak
+    ↓
+Build /outbreaks
+    ↓
+Build /outbreak/{id}/source
+    ↓
+Build /outbreak/{id}/heatmap
+
+PHASE 9 — FRONTEND
+    ↓
+Dashboard
+    ↓
+Map
+    ↓
+Heat map
+    ↓
+Outbreak timeline
+    ↓
+Source visualization
+
+PHASE 10 — DEPLOYMENT
+    ↓
+Deploy ML model
+    ↓
+Deploy FastAPI
+    ↓
+Deploy frontend
+    ↓
+Connect everything
+
+
+=========================================================
+25. FINAL SYSTEM
+=========================================================
+
+                    Final_data.csv
+                          ↓
+                   Data Cleaning
+                          ↓
+                  Feature Engineering
+                          ↓
+                 Time-based Dataset
+                          ↓
+              ┌───────────┴───────────┐
+              ↓                       ↓
+       Outbreak Detection       Historical Data
+              ↓                       ↓
+     RF / XGBoost / MLP         Outbreak Events
+              ↓                       ↓
+              └───────────┬───────────┘
+                          ↓
+                 Source Localization
+                          ↓
+                 Spread Analysis
+                          ↓
+                  Heat Map Dataset
+                          ↓
+                       FastAPI
+                          ↓
+                      Frontend
+                          ↓
+          ┌─────────────────────────────┐
+          │     OUTBREAK DETECTED       │
+          │                             │
+          │ Disease: Dengue             │
+          │ Source: District A          │
+          │ Source Score: 87%           │
+          │ Affected: 8 districts       │
+          │                             │
+          │        [HEAT MAP]            │
+          │                             │
+          │ A → B → C → D               │
+          │     SPREAD                  │
+          └─────────────────────────────┘
+
+
+CORE PROJECT OUTPUTS
+--------------------
+
+1. OUTBREAK DETECTION
+   "An outbreak has been detected."
+
+2. SOURCE LOCALIZATION
+   "District X is the most likely source/candidate."
+
+3. SPREAD ANALYSIS
+   "The outbreak progressed from X → Y → Z."
+
+4. HEAT MAP
+   "These locations show the geographic intensity and spread."
+
+5. API
+   Makes all model results available to the frontend.
+
+6. DASHBOARD
+   Visually presents outbreak, source, spread, and geographic
+   intensity.

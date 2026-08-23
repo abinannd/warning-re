@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+# pyrefly: ignore [missing-import]
 import pytest
 
 base_dir = os.path.dirname(os.path.abspath(__file__))

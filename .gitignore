@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ignore agent artifacts
+outbreak-detection/agent_artifacts/

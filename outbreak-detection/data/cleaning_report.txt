@@ -1,0 +1,50 @@
+Data Cleaning Audit Report
+=========================
+
+--- Step 1: Loading Raw Data from c:\BRAIN-STORM\warning-re\outbreak-detection\data\Final_data.csv ---
+Original shape: (8985, 15)
+Dropped column: 'Unnamed: 0'
+
+--- Step 2: Standardizing Column Names ---
+Renamed columns: {'state_ut': 'State', 'district': 'District', 'preci': 'Precipitation', 'Temp': 'Surface Temperature'}
+
+--- Step 3: Parsing Dates ---
+Created 'Date' column from 'year', 'mon', 'day' and dropped original date/week columns.
+
+--- Step 4: Removing Duplicates ---
+Dropped 145 completely duplicated rows.
+
+--- Step 5: Standardizing Disease Names ---
+Applied disease standardizations to 22 variations.
+
+--- Step 6: Standardizing State Names ---
+Stripped whitespace and applied title-casing to State names.
+
+--- Step 7: Standardizing District Names ---
+Stripped whitespace and applied title-casing to District names.
+
+--- Step 8: Validating Coordinates ---
+All coordinates are within valid bounds.
+
+--- Step 9: Handling Missing Values ---
+Imputed 6339 missing values in 'Deaths' with 0.
+Dropped 1 rows with invalid or missing 'Cases'.
+Left missing values in 'Precipitation', 'Surface Temperature', and 'LAI' as NaN (to be handled in feature engineering).
+
+--- Step 10: Detecting Outliers / Impossible Values ---
+
+--- Step 11: Converting to Weekly Grain ---
+Aggregated data to 8098 rows. Grouping by: ['State', 'District', 'Disease', 'ISO_Year', 'ISO_Week']
+Aggregation strategy: Cases and Deaths summed. Environmental variables and coordinates averaged.
+
+--- Step 12: Checking for Duplicate Week Combos ---
+Validation passed: No duplicate State+District+Disease+Week rows.
+
+--- Step 13: Sorting Chronologically ---
+Sorted data chronologically.
+
+--- Final Summary ---
+Final shape: (8098, 13)
+Date range: 2009-05-04 00:00:00 to 2022-06-29 00:00:00
+
+Cleaned data saved to c:\BRAIN-STORM\warning-re\outbreak-detection\data\cleaned_weekly_data.csv

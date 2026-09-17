@@ -123,6 +123,30 @@ def load_all():
         if "taluk" in df.columns:
             df["taluk"] = df["taluk"].str.strip()
 
+    # Apply authoritative coordinate mapping from Kerala_78_Taluks_Latitude_Longitude.xlsx
+    # The XLSX is the single source of truth for taluk lat/lon.
+    # Cluster epicentres are dynamically recalculated as the mean of their constituent taluk coords.
+    # BASE_DIR = .../outbreak-detection/api  → two levels up → warning-re/coordinates/
+    AUTH_COORDS_PATH = os.path.join(
+        os.path.dirname(os.path.dirname(BASE_DIR)), "coordinates", "Kerala_78_Taluks_Latitude_Longitude.xlsx"
+    )
+    if os.path.exists(AUTH_COORDS_PATH):
+        auth_coords = pd.read_excel(AUTH_COORDS_PATH)
+        auth_coords = auth_coords.rename(columns={"Taluk": "taluk", "Latitude": "_auth_lat", "Longitude": "_auth_lon"})
+        auth_coords["taluk"] = auth_coords["taluk"].str.strip()
+        # Build a simple taluk → (lat, lon) dict for O(1) lookup
+        _lat_map = dict(zip(auth_coords["taluk"], auth_coords["_auth_lat"]))
+        _lon_map = dict(zip(auth_coords["taluk"], auth_coords["_auth_lon"]))
+
+        for _df_ref, _df_name in [(p4h, "heatmap"), (p4c, "clusters"), (src, "sources"), (p3, "p3")]:
+            if "taluk" in _df_ref.columns and "latitude" in _df_ref.columns and "longitude" in _df_ref.columns:
+                # map() preserves index; NaN-safe: unmapped taluks keep original
+                _df_ref["latitude"]  = _df_ref["taluk"].map(_lat_map).combine_first(_df_ref["latitude"])
+                _df_ref["longitude"] = _df_ref["taluk"].map(_lon_map).combine_first(_df_ref["longitude"])
+        print(f"[COORD] Authoritative coordinates applied from: {AUTH_COORDS_PATH}")
+    else:
+        print(f"[COORD] WARNING: Authoritative coords file not found at {AUTH_COORDS_PATH}; using CSV coordinates.")
+
     cache["heatmap"]  = p4h
     cache["clusters"] = p4c
     cache["sources"]  = src

@@ -162,6 +162,18 @@ def load_all():
     )
     cache["geo"] = geo_df
 
+    # Load static geojsons if available
+    cache["geojsons"] = {}
+    for g_name in ["kerala", "districts", "taluks"]:
+        g_path = os.path.join(GEO_DIR, f"{g_name}.geojson")
+        if os.path.exists(g_path):
+            try:
+                with open(g_path, "r", encoding="utf-8") as f:
+                    cache["geojsons"][g_name] = json.load(f)
+                print(f"[GEO] Loaded {g_name}.geojson")
+            except Exception as e:
+                print(f"[GEO] Error loading {g_name}.geojson: {e}")
+
     print(f"[LOADED] heatmap={len(p4h)}, clusters={len(p4c)}, p3={len(p3)}")
 
 
@@ -754,10 +766,18 @@ def geo_taluks(district_id: Optional[str] = Query(None)):
 
 # ---------------------------------------------------------------------------
 # /api/geography/taluks/{talukId}/geometry  → GeoJSON Feature
-# Returns a simple point feature (no polygon data available without external GeoJSON)
 # ---------------------------------------------------------------------------
-@app.get("/api/geography/taluks/{taluk_id}/geometry", summary="Taluk geometry (point)")
+@app.get("/api/geography/taluks/{taluk_id}/geometry", summary="Taluk geometry (polygon)")
 def taluk_geometry(taluk_id: str):
+    geo_data = cache.get("geojsons", {}).get("taluks", {})
+    features = geo_data.get("features", [])
+    
+    for feat in features:
+        props = feat.get("properties", {})
+        if str(props.get("id")).lower() == taluk_id.lower():
+            return feat
+
+    # Fallback to point
     geo = cache["geo"]
     match = geo[geo["taluk"].str.lower().str.replace(" ", "_") == taluk_id.lower()]
     if match.empty:
@@ -779,8 +799,18 @@ def taluk_geometry(taluk_id: str):
 # ---------------------------------------------------------------------------
 # /api/geography/districts/{districtId}/geometry  → GeoJSON Feature
 # ---------------------------------------------------------------------------
-@app.get("/api/geography/districts/{district_id}/geometry", summary="District geometry (point centroid)")
+@app.get("/api/geography/districts/{district_id}/geometry", summary="District geometry (polygon)")
 def district_geometry(district_id: str):
+    geo_data = cache.get("geojsons", {}).get("districts", {})
+    features = geo_data.get("features", [])
+    
+    for feat in features:
+        props = feat.get("properties", {})
+        feat_name = str(props.get("name", "")).lower().replace(" ", "_")
+        if feat_name == district_id.lower():
+            return feat
+
+    # Fallback to point
     geo = cache["geo"]
     match = geo[geo["district"].str.lower().str.replace(" ", "_") == district_id.lower()]
     if match.empty:
@@ -799,10 +829,15 @@ def district_geometry(district_id: str):
 
 
 # ---------------------------------------------------------------------------
-# /api/geography/kerala  → GeoJSON FeatureCollection (all taluk points)
+# /api/geography/kerala  → GeoJSON FeatureCollection (Kerala state boundary)
 # ---------------------------------------------------------------------------
-@app.get("/api/geography/kerala", summary="All Kerala taluk points as FeatureCollection")
+@app.get("/api/geography/kerala", summary="Kerala state boundary as FeatureCollection")
 def kerala_geometry():
+    kerala_data = cache.get("geojsons", {}).get("kerala")
+    if kerala_data:
+        return kerala_data
+
+    # Fallback to points
     geo = cache["geo"]
     features = []
     for _, row in geo.iterrows():

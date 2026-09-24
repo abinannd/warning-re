@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // ---- Constants ---------------------------------------------------------------
 const TOTAL_FRAMES      = 240;
@@ -14,7 +14,11 @@ const LIFT_END_FRAC     = 0.28;
 const MAX_PARTICLES     = 220;
 const DOT_STEP          = 6;
 
-const RAW_P_AT_203 = (DISSOLVE_START - TRANS_START) / (TRANS_END - TRANS_START);
+const RAW_P_AT_203  = (DISSOLVE_START - TRANS_START) / (TRANS_END - TRANS_START);
+
+// Final 20-frame fade section: frame 193 → 212
+const FADE_START    = 193;
+const RAW_P_AT_193  = (FADE_START - TRANS_START) / (TRANS_END - TRANS_START);
 
 // ---- Types -------------------------------------------------------------------
 interface Particle {
@@ -275,6 +279,8 @@ export default function LogoIntroTransition({ children }: Props) {
         }
 
         // ── OVERLAY background ────────────────────────────────────────────────
+        // finalFadeProg: 0 at frame 193, 1 at frame 212
+        const finalFadeProg = clamp((rawP - RAW_P_AT_193) / (1.0 - RAW_P_AT_193), 0, 1);
         if (overlayRef.current) {
           if (done) {
             overlayRef.current.style.display = 'none';
@@ -282,6 +288,9 @@ export default function LogoIntroTransition({ children }: Props) {
             const overlayAlpha = clamp(1 - rawP * 1.15, 0, 1);
             overlayRef.current.style.display          = 'block';
             overlayRef.current.style.backgroundColor  = `rgba(0,0,0,${overlayAlpha})`;
+            // CSS opacity fades the ENTIRE overlay (both canvases + background) 100%→0%
+            // across the final 20 frames, while the existing particle/dot effects remain.
+            overlayRef.current.style.opacity          = String(1 - finalFadeProg);
           }
         }
 
@@ -290,13 +299,18 @@ export default function LogoIntroTransition({ children }: Props) {
           if (done) {
             containerRef.current.style.transform = 'none';
             containerRef.current.style.opacity   = '1';
+          } else if (rawP < RAW_P_AT_193) {
+            // Before frame 193 — keep content hidden below the viewport
+            containerRef.current.style.transform = `translateY(${SCROLL_PX * (1 - rawP)}px)`;
+            containerRef.current.style.opacity   = '0';
           } else {
-            // Slide content up from below — offset decreases as rawP grows
-            const offset = SCROLL_PX * (1 - rawP);
-            containerRef.current.style.transform = `translateY(${offset}px)`;
-            // Fade content in from 70% progress onward
-            const contentAlpha = rawP < 0.70 ? 0 : clamp((rawP - 0.70) / 0.30, 0, 1);
-            containerRef.current.style.opacity   = String(contentAlpha);
+            // Final 20 frames (193 → 212):
+            // Dashboard rises from 1 viewport-height below its natural position to 0
+            // and opacity goes from 5% → 100%.
+            const fp      = finalFadeProg; // 0 at frame 193, 1 at frame 212
+            const yOffset = (1 - fp) * window.innerHeight;
+            containerRef.current.style.transform = `translateY(${yOffset}px)`;
+            containerRef.current.style.opacity   = String(0.05 + 0.95 * fp);
           }
         }
 

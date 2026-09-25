@@ -219,3 +219,6 @@ __marimo__/
 
 # Ignore agent artifacts
 outbreak-detection/agent_artifacts/
+
+# Ignore refer
+outbreak-detection/refer

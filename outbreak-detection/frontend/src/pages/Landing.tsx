@@ -10,7 +10,7 @@ let imagesLoadedGlobal = false;
 let loadedCount = 0;
 for (let i = 1; i <= FRAME_COUNT; i++) {
   const img = new Image();
-  img.src = `/logo_animation/frame_${i.toString().padStart(5, '0')}.png`;
+  img.src = `${import.meta.env.BASE_URL}logo_animation/frame_${i.toString().padStart(5, '0')}.png`;
   img.onload = () => {
     loadedCount++;
     if (loadedCount === FRAME_COUNT) {

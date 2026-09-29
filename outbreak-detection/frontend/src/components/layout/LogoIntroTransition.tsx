@@ -65,7 +65,7 @@ export default function LogoIntroTransition({ children }: Props) {
   useEffect(() => {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
-      img.src = `/logo_animation/frame_${i.toString().padStart(4, '0')}.jpg`;
+      img.src = `${import.meta.env.BASE_URL}logo_animation/frame_${i.toString().padStart(4, '0')}.jpg`;
       frames.current[i] = img;
     }
   }, []);

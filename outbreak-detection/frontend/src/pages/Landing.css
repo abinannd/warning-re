@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'WatchFont';
+  src: url('/FONTS/Amethysta-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 .landing-wrapper {
   position: relative;
   width: 100%;
@@ -22,10 +29,10 @@
 .globe-fixed-container {
   position: fixed;
   top: 50%;
-  left: 50%;
+  left: 30%;
   transform: translate(-50%, -50%);
-  width: 700px;
-  height: 700px;
+  width: 1024px;
+  height: 576px;
   z-index: 5;
   transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
   pointer-events: none;
@@ -34,7 +41,9 @@
 
 .globe-fixed-container.is-carousel {
   left: 75%;
-  transform: translate(-50%, -50%) scale(0.85);
+  width: 1280px;
+  height: 720px;
+  transform: translate(-50%, -50%);
 }
 
 .globe-canvas {
@@ -58,20 +67,19 @@
 }
 
 .opening-content {
-  margin-top: 450px; /* Pushes the text below the centered globe */
+  margin-top: 0px; /* Pushes the text below the centered globe */
 }
 
 .watch-text {
+  font-family: 'WatchFont', sans-serif;
   font-size: 5vw;
-  font-weight: 900;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: floatUp 2s ease-out;
+  font-weight: normal;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  transform: translate(100px, 0px);
   text-align: center;
-  margin-left: 0.3em; /* offset for letter-spacing to visually center */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes floatUp {

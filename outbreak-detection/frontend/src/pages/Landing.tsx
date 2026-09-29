@@ -108,7 +108,19 @@ export default function Landing() {
     const img = PRELOAD_IMAGES[frameIndex];
     if (img) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const scale = Math.min(
+  canvas.width / img.naturalWidth,
+  canvas.height / img.naturalHeight
+);
+
+const width = img.naturalWidth * scale;
+const height = img.naturalHeight * scale;
+
+const x = (canvas.width - width) / 2;
+const y = (canvas.height - height) / 2;
+
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.drawImage(img, x, y, width, height);
     }
   }, [scrollProgress, imagesLoaded]);
 
@@ -128,7 +140,7 @@ export default function Landing() {
       <div className="content-scroll">
         <div className="opening-section">
           <div className="opening-content">
-             <div className="watch-text">WATCH</div>
+             <div className="watch-text">UT WATCH</div>
           </div>
         </div>
 

@@ -26,6 +26,16 @@
   z-index: 0;
 }
 
+.antigravity-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
 .globe-fixed-container {
   position: fixed;
   top: 50%;

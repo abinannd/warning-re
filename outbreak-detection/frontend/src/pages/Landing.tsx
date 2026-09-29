@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './Landing.css';
+import Antigravity from '../components/Antigravity';
 
 const FRAME_COUNT = 180;
 const PRELOAD_IMAGES: HTMLImageElement[] = [];
@@ -127,6 +128,25 @@ ctx.drawImage(img, x, y, width, height);
   return (
     <div className="landing-wrapper">
       <div className="landing-bg"></div>
+ <div className="antigravity-layer" aria-hidden="true">
+      <Antigravity
+        count={260}
+        magnetRadius={7}
+        ringRadius={4}
+        waveSpeed={0.8}
+        waveAmplitude={1.3}
+        particleSize={2}
+        lerpSpeed={0.1}
+        color="#1e0250"
+        autoAnimate={false}
+        particleVariance={1}
+        rotationSpeed={0}
+        depthFactor={1}
+        pulseSpeed={3}
+        particleShape="capsule"
+        fieldStrength={16}
+      />
+    </div>
 
       <div className={`globe-fixed-container ${activeIndex >= 0 ? 'is-carousel' : ''}`}>
         <canvas 

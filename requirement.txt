@@ -117,7 +117,7 @@ Other useful features:
 - death trends
 - geographic coordinates
 
-hii
+hii..
 =========================================================
 4. MAIN TASK — OUTBREAK DETECTION
 =========================================================

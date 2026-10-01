@@ -21,34 +21,59 @@ for (let i = 1; i <= FRAME_COUNT; i++) {
 }
 
 const SECTIONS_DATA = [
-  { 
-    title: "Project Alpha", 
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quisquam eaque, laboriosam expedita perferendis facilis esse deleniti qui voluptas! Nesciunt!" 
+  {
+    title: "OUT WATCH",
+    text: "OUT WATCH is an intelligent outbreak surveillance system built to detect emerging disease outbreaks and identify their potential...",
+    fullText: `
+OUT WATCH is an intelligent outbreak surveillance system designed to detect emerging disease outbreaks and identify their potential geographic sources. It analyzes disease surveillance patterns across time and location, transforming complex epidemiological data into actionable visual intelligence for faster situational awareness and response.
+
+By combining machine learning, spatiotemporal analysis, and geographic visualization, OUT WATCH identifies unusual patterns in disease activity and highlights areas that may require closer attention. The system helps track outbreak intensity, identify potential sources and clusters, and visualize how disease activity is distributed across geographic regions.
+
+OUT WATCH is designed to support data-driven surveillance by bringing detection, localization, and spatial intelligence together in a unified platform. Its goal is to make complex outbreak information easier to understand, interpret, and act upon.
+`
   },
-  { 
-    title: "Global Tracking", 
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quisquam eaque, laboriosam expedita perferendis facilis esse deleniti qui voluptas! Nesciunt!" 
+
+  {
+    title: "Global Tracking",
+    text: "Track disease activity across geographic regions and identify emerging patterns...",
+    fullText: `
+Full description for Global Tracking will go here.
+`
   },
-  { 
-    title: "Real-time Intel", 
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quisquam eaque, laboriosam expedita perferendis facilis esse deleniti qui voluptas! Nesciunt!" 
+
+  {
+    title: "Real-time Intel",
+    text: "Transform surveillance data into meaningful intelligence for faster situational awareness...",
+    fullText: `
+Full description for Real-time Intel will go here.
+`
   },
-  { 
-    title: "Actionable Data", 
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quisquam eaque, laboriosam expedita perferendis facilis esse deleniti qui voluptas! Nesciunt!" 
+
+  {
+    title: "Actionable Data",
+    text: "Turn complex outbreak data into information that can support faster and more informed response...",
+    fullText: `
+Full description for Actionable Data will go here.
+`
   },
-  { 
-    title: "Surveillance", 
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi quisquam eaque, laboriosam expedita perferendis facilis esse deleniti qui voluptas! Nesciunt!" 
-  },
+
+  {
+    title: "Surveillance",
+    text: "Support continuous disease surveillance through centralized monitoring and visualization...",
+    fullText: `
+Full description for Surveillance will go here.
+`
+  }
 ];
+
 
 export default function Landing() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [imagesLoaded, setImagesLoaded] = useState(imagesLoadedGlobal);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isViewMoreOpen, setIsViewMoreOpen] = useState(false);
 
   // Handle images preload completion
   useEffect(() => {
@@ -153,7 +178,9 @@ ctx.drawImage(img, x, y, width, height);
               >
                 <div className="title">{section.title}</div>
                 <div className="text">{section.text}</div>
-                <button type="button" className="view-more-btn">View More</button>
+                <button type="button" className="view-more-btn"
+                onClick={() => setIsViewMoreOpen(true)}
+                >View More</button>
               </div>
             ))}
           </div>

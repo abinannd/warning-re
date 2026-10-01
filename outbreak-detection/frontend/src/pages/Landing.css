@@ -303,3 +303,19 @@
     transform: translateY(0) scale(1);
   }
 }
+/* ================================
+   BLUR BACKGROUND WHEN POPUP IS OPEN
+   ================================ */
+
+.landing-wrapper.popup-open > .landing-bg,
+.landing-wrapper.popup-open > .globe-fixed-container,
+.landing-wrapper.popup-open > .content-scroll {
+  filter: blur(12px);
+  transition: filter 0.3s ease;
+}
+
+.landing-wrapper > .landing-bg,
+.landing-wrapper > .globe-fixed-container,
+.landing-wrapper > .content-scroll {
+  transition: filter 0.3s ease;
+}

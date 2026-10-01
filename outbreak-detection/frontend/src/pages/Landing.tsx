@@ -204,7 +204,7 @@ export default function Landing() {
   }, [scrollProgress, imagesLoaded]);
 
   return (
-    <div className="landing-wrapper">
+    <div className={`landing-wrapper ${isViewMoreOpen ? 'popup-open' : ''}`}>
       <div className="landing-bg"></div>
 
       <div

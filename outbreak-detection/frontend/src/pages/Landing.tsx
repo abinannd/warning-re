@@ -266,57 +266,54 @@ export default function Landing() {
             {/* Empty space that allows the fixed canvas to visually occupy the right side */}
           </div>
         </div>
+      </div>
 
-        {isViewMoreOpen && activeIndex >= 0 && (
-          <div className="view-more-overlay">
-            <div
-              className="view-more-panel"
-              onMouseMove={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
+      {isViewMoreOpen && activeIndex >= 0 && (
+        <div className="view-more-overlay">
+          <div
+            className="view-more-panel"
+            onMouseMove={(e) => {
+              const rect =
+                e.currentTarget.getBoundingClientRect();
 
               const x =
-              ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                ((e.clientX - rect.left) / rect.width - 0.5) * 2;
 
               const y =
-              ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+                ((e.clientY - rect.top) / rect.height - 0.5) * 2;
 
               setTitleMouse({ x, y });
-              }}
-              onMouseLeave={() => {
+            }}
+            onMouseLeave={() => {
               setTitleMouse({ x: 0, y: 0 });
-              }}
-              style={{
-               transform: `
-                  perspective(1200px)
-                  rotateY(${titleMouse.x * 2}deg)
-                  rotateX(${titleMouse.y * -2}deg)
-                `,
-               }}
+            }}
+            style={{
+              transform: `
+                perspective(1200px)
+                rotateY(${titleMouse.x * 2}deg)
+                rotateX(${titleMouse.y * -2}deg)
+              `,
+            }}
+          >
+            <button
+              type="button"
+              className="view-more-close"
+              onClick={() => setIsViewMoreOpen(false)}
+              aria-label="Close"
             >
+              ×
+            </button>
 
-              <button
-                type="button"
-                className="view-more-close"
-                onClick={() =>
-                  setIsViewMoreOpen(false)
-                }
-                aria-label="Close"
-              >
-                ×
-              </button>
+            <div className="view-more-title">
+              {SECTIONS_DATA[activeIndex].title}
+            </div>
 
-              <div className="view-more-title">
-                 {SECTIONS_DATA[activeIndex].title}
-              </div>
-              
-              <div className="view-more-content">
-                {SECTIONS_DATA[activeIndex].fullText}
-              </div>
-
+            <div className="view-more-content">
+              {SECTIONS_DATA[activeIndex].fullText}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

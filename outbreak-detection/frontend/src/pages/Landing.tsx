@@ -30,7 +30,7 @@ for (let i = 1; i <= FRAME_COUNT; i++) {
 const SECTIONS_DATA = [
   {
     title: "OUT WATCH",
-    text: "OUT WATCH is an intelligent outbreak surveillance system built to detect emerging disease outbreaks and identify their potential...",
+    text: "OUT WATCH is an intelligent outbreak surveillance system designed to detect emerging disease outbreaks and identify their potential geographic sources. It analyzes disease surveillance....",
     fullText: `
 OUT WATCH is an intelligent outbreak surveillance system designed to detect emerging disease outbreaks and identify their potential geographic sources. It analyzes disease surveillance patterns across time and location, transforming complex epidemiological data into actionable visual intelligence for faster situational awareness and response.
 
@@ -223,7 +223,16 @@ export default function Landing() {
       <div className="content-scroll">
         <div className="opening-section">
           <div className="opening-content">
-            <div className="watch-text">
+            <div 
+                className="watch-text"
+                   style={{
+                    opacity: Math.max(0, 1 - scrollProgress * 4),
+                    transform: `
+                      translate(100px, ${scrollProgress * -80}px)
+                      scale(${Math.max(0.8, 1 - scrollProgress * 0.8)})
+                    `,
+                }}          
+            >
               UT WATCH
             </div>
           </div>

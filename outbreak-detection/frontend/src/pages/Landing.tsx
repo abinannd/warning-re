@@ -269,7 +269,30 @@ export default function Landing() {
 
         {isViewMoreOpen && activeIndex >= 0 && (
           <div className="view-more-overlay">
-            <div className="view-more-panel">
+            <div
+              className="view-more-panel"
+              onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+
+              const x =
+              ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+
+              const y =
+              ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+              setTitleMouse({ x, y });
+              }}
+              onMouseLeave={() => {
+              setTitleMouse({ x: 0, y: 0 });
+              }}
+              style={{
+               transform: `
+                  perspective(1200px)
+                  rotateY(${titleMouse.x * 2}deg)
+                  rotateX(${titleMouse.y * -2}deg)
+                `,
+               }}
+            >
 
               <button
                 type="button"
@@ -282,48 +305,10 @@ export default function Landing() {
                 ×
               </button>
 
-              <div
-                className="view-more-title"
-                onMouseMove={(e) => {
-                  const rect =
-                    e.currentTarget.getBoundingClientRect();
-
-                  const x =
-                    ((e.clientX - rect.left) /
-                      rect.width -
-                      0.5) *
-                    2;
-
-                  const y =
-                    ((e.clientY - rect.top) /
-                      rect.height -
-                      0.5) *
-                    2;
-
-                  setTitleMouse({ x, y });
-                }}
-                onMouseLeave={() => {
-                  setTitleMouse({
-                    x: 0,
-                    y: 0
-                  });
-                }}
-                style={{
-                  transform: `translate(
-                    ${titleMouse.x * 8}px,
-                    ${titleMouse.y * 5}px
-                  )`,
-                  filter: `drop-shadow(
-                    ${titleMouse.x * 4}px
-                    ${titleMouse.y * 4}px
-                    15px
-                    rgba(156, 177, 255, 0.18)
-                  )`
-                }}
-              >
-                {SECTIONS_DATA[activeIndex].title}
+              <div className="view-more-title">
+                 {SECTIONS_DATA[activeIndex].title}
               </div>
-
+              
               <div className="view-more-content">
                 {SECTIONS_DATA[activeIndex].fullText}
               </div>

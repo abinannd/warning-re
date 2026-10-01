@@ -7,16 +7,23 @@ const PRELOAD_IMAGES: HTMLImageElement[] = [];
 // Preload images globally so it only happens once
 let imagesLoadedGlobal = false;
 let loadedCount = 0;
+
 for (let i = 1; i <= FRAME_COUNT; i++) {
   const img = new Image();
-  img.src = `${import.meta.env.BASE_URL}logo_animation/frame_${i.toString().padStart(5, '0')}.png`;
+
+  img.src = `${import.meta.env.BASE_URL}logo_animation/frame_${i
+    .toString()
+    .padStart(5, '0')}.png`;
+
   img.onload = () => {
     loadedCount++;
+
     if (loadedCount === FRAME_COUNT) {
       imagesLoadedGlobal = true;
       window.dispatchEvent(new Event('imagesPreloaded'));
     }
   };
+
   PRELOAD_IMAGES.push(img);
 }
 
@@ -66,14 +73,15 @@ Full description for Surveillance will go here.
   }
 ];
 
-
 export default function Landing() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+
   const [imagesLoaded, setImagesLoaded] = useState(imagesLoadedGlobal);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isViewMoreOpen, setIsViewMoreOpen] = useState(false);
+  const [titleMouse, setTitleMouse] = useState({ x: 0, y: 0 });
 
   // Handle images preload completion
   useEffect(() => {
@@ -81,8 +89,11 @@ export default function Landing() {
       setImagesLoaded(true);
     } else {
       const handlePreloaded = () => setImagesLoaded(true);
+
       window.addEventListener('imagesPreloaded', handlePreloaded);
-      return () => window.removeEventListener('imagesPreloaded', handlePreloaded);
+
+      return () =>
+        window.removeEventListener('imagesPreloaded', handlePreloaded);
     }
   }, []);
 
@@ -91,61 +102,104 @@ export default function Landing() {
     const handleScroll = () => {
       const html = document.documentElement;
       const scrollTop = window.scrollY || html.scrollTop;
-      const maxScrollTop = Math.max(0, html.scrollHeight - window.innerHeight);
-      
+      const maxScrollTop = Math.max(
+        0,
+        html.scrollHeight - window.innerHeight
+      );
+
       let scrollFraction = 0;
+
       if (maxScrollTop > 0) {
         scrollFraction = scrollTop / maxScrollTop;
       }
+
       setScrollProgress(scrollFraction);
 
       if (carouselRef.current) {
-        const carouselTop = carouselRef.current.getBoundingClientRect().top;
+        const carouselTop =
+          carouselRef.current.getBoundingClientRect().top;
+
         const proportion = carouselTop / window.innerHeight;
-        
+
         if (proportion > 0.5) {
-           setActiveIndex(-1);
+          setActiveIndex(-1);
         } else {
-           let index = Math.ceil(-1 * (proportion + 0.5));
-           index = Math.max(0, Math.min(index, SECTIONS_DATA.length - 1));
-           setActiveIndex(index);
+          let index = Math.ceil(-1 * (proportion + 0.5));
+
+          index = Math.max(
+            0,
+            Math.min(index, SECTIONS_DATA.length - 1)
+          );
+
+          setActiveIndex(index);
         }
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
+
     // Trigger once on mount
     handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () =>
+      window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Draw globe onto canvas
   useEffect(() => {
     if (!imagesLoaded || !canvasRef.current) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+
     if (!ctx) return;
 
-    let frameIndex = Math.floor(scrollProgress * FRAME_COUNT);
-    frameIndex = Math.max(0, Math.min(frameIndex, FRAME_COUNT - 1));
+    let frameIndex = Math.floor(
+      scrollProgress * FRAME_COUNT
+    );
+
+    frameIndex = Math.max(
+      0,
+      Math.min(frameIndex, FRAME_COUNT - 1)
+    );
 
     const img = PRELOAD_IMAGES[frameIndex];
+
     if (img) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
       const scale = Math.min(
-  canvas.width / img.naturalWidth,
-  canvas.height / img.naturalHeight
-);
+        canvas.width / img.naturalWidth,
+        canvas.height / img.naturalHeight
+      );
 
-const width = img.naturalWidth * scale;
-const height = img.naturalHeight * scale;
+      const width = img.naturalWidth * scale;
+      const height = img.naturalHeight * scale;
 
-const x = (canvas.width - width) / 2;
-const y = (canvas.height - height) / 2;
+      const x = (canvas.width - width) / 2;
+      const y = (canvas.height - height) / 2;
 
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-ctx.drawImage(img, x, y, width, height);
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      ctx.drawImage(
+        img,
+        x,
+        y,
+        width,
+        height
+      );
     }
   }, [scrollProgress, imagesLoaded]);
 
@@ -153,11 +207,15 @@ ctx.drawImage(img, x, y, width, height);
     <div className="landing-wrapper">
       <div className="landing-bg"></div>
 
-      <div className={`globe-fixed-container ${activeIndex >= 0 ? 'is-carousel' : ''}`}>
-        <canvas 
-          ref={canvasRef} 
-          width={1000} 
-          height={1000} 
+      <div
+        className={`globe-fixed-container ${
+          activeIndex >= 0 ? 'is-carousel' : ''
+        }`}
+      >
+        <canvas
+          ref={canvasRef}
+          width={1000}
+          height={1000}
           className="globe-canvas"
         />
       </div>
@@ -165,29 +223,114 @@ ctx.drawImage(img, x, y, width, height);
       <div className="content-scroll">
         <div className="opening-section">
           <div className="opening-content">
-             <div className="watch-text">UT WATCH</div>
+            <div className="watch-text">
+              UT WATCH
+            </div>
           </div>
         </div>
 
-        <div className="carousel" ref={carouselRef}>
+        <div
+          className="carousel"
+          ref={carouselRef}
+        >
           <div className="left">
             {SECTIONS_DATA.map((section, idx) => (
-              <div 
-                key={idx} 
-                className={`left-item ${activeIndex === idx ? 'active' : ''}`}
+              <div
+                key={idx}
+                className={`left-item ${
+                  activeIndex === idx ? 'active' : ''
+                }`}
               >
-                <div className="title">{section.title}</div>
-                <div className="text">{section.text}</div>
-                <button type="button" className="view-more-btn"
-                onClick={() => setIsViewMoreOpen(true)}
-                >View More</button>
+                <div className="title">
+                  {section.title}
+                </div>
+
+                <div className="text">
+                  {section.text}
+                </div>
+
+                <button
+                  type="button"
+                  className="view-more-btn"
+                  onClick={() =>
+                    setIsViewMoreOpen(true)
+                  }
+                >
+                  View More
+                </button>
               </div>
             ))}
           </div>
+
           <div className="right">
             {/* Empty space that allows the fixed canvas to visually occupy the right side */}
           </div>
         </div>
+
+        {isViewMoreOpen && activeIndex >= 0 && (
+          <div className="view-more-overlay">
+            <div className="view-more-panel">
+
+              <button
+                type="button"
+                className="view-more-close"
+                onClick={() =>
+                  setIsViewMoreOpen(false)
+                }
+                aria-label="Close"
+              >
+                ×
+              </button>
+
+              <div
+                className="view-more-title"
+                onMouseMove={(e) => {
+                  const rect =
+                    e.currentTarget.getBoundingClientRect();
+
+                  const x =
+                    ((e.clientX - rect.left) /
+                      rect.width -
+                      0.5) *
+                    2;
+
+                  const y =
+                    ((e.clientY - rect.top) /
+                      rect.height -
+                      0.5) *
+                    2;
+
+                  setTitleMouse({ x, y });
+                }}
+                onMouseLeave={() => {
+                  setTitleMouse({
+                    x: 0,
+                    y: 0
+                  });
+                }}
+                style={{
+                  transform: `translate(
+                    ${titleMouse.x * 8}px,
+                    ${titleMouse.y * 5}px
+                  )`,
+                  filter: `drop-shadow(
+                    ${titleMouse.x * 4}px
+                    ${titleMouse.y * 4}px
+                    15px
+                    rgba(156, 177, 255, 0.18)
+                  )`
+                }}
+              >
+                {SECTIONS_DATA[activeIndex].title}
+              </div>
+
+              <div className="view-more-content">
+                {SECTIONS_DATA[activeIndex].fullText}
+              </div>
+
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

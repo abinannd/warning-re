@@ -194,8 +194,8 @@
   padding: 40px;
 
   background: rgba(2, 8, 18, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
 
   animation: viewMoreFadeIn 0.35s ease forwards;
 }
@@ -212,8 +212,8 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 28px;
 
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(45px);
+  -webkit-backdrop-filter: blur(45px);
 
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.45),

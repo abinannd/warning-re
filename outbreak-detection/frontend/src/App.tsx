@@ -8,12 +8,15 @@ import Alerts from "./pages/Alerts";
 import Surveillance from "./pages/Surveillance";
 import Advisory from "./pages/Advisory";
 import Landing from "./pages/Landing";
+import Tracking from "./pages/Tracking";
 import './index.css';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/tracking" element={<Tracking />} />
+
       <Route element={<AppLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="map" element={<OutbreakMap />} />

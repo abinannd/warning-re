@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 
 const FRAME_COUNT = 180;
@@ -74,6 +75,7 @@ Full description for Surveillance will go here.
 ];
 
 export default function Landing() {
+  const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -204,7 +206,11 @@ export default function Landing() {
   }, [scrollProgress, imagesLoaded]);
 
   return (
-    <div className={`landing-wrapper ${isViewMoreOpen ? 'popup-open' : ''}`}>
+    <div
+      className={`landing-wrapper ${
+        isViewMoreOpen ? 'popup-open' : ''
+      }`}
+    >
       <div className="landing-bg"></div>
 
       <div
@@ -223,15 +229,21 @@ export default function Landing() {
       <div className="content-scroll">
         <div className="opening-section">
           <div className="opening-content">
-            <div 
-                className="watch-text"
-                   style={{
-                    opacity: Math.max(0, 1 - scrollProgress * 4),
-                    transform: `
-                      translate(100px, ${scrollProgress * -80}px)
-                      scale(${Math.max(0.8, 1 - scrollProgress * 0.8)})
-                    `,
-                }}          
+            <div
+              className="watch-text"
+              style={{
+                opacity: Math.max(
+                  0,
+                  1 - scrollProgress * 4
+                ),
+                transform: `
+                  translate(100px, ${scrollProgress * -80}px)
+                  scale(${Math.max(
+                    0.8,
+                    1 - scrollProgress * 0.8
+                  )})
+                `
+              }}
             >
               UT WATCH
             </div>
@@ -258,15 +270,28 @@ export default function Landing() {
                   {section.text}
                 </div>
 
-                <button
-                  type="button"
-                  className="view-more-btn"
-                  onClick={() =>
-                    setIsViewMoreOpen(true)
-                  }
-                >
-                  View More
-                </button>
+                {section.title === "Global Tracking" ? (
+                  <button
+                    type="button"
+                    className="track-button"
+                    onClick={() => navigate('/tracking')}
+                  >
+                    <span>TRACK</span>
+                    <span className="track-button-arrow">
+                      →
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="view-more-btn"
+                    onClick={() =>
+                      setIsViewMoreOpen(true)
+                    }
+                  >
+                    View More
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -286,28 +311,39 @@ export default function Landing() {
                 e.currentTarget.getBoundingClientRect();
 
               const x =
-                ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                ((e.clientX - rect.left) /
+                  rect.width -
+                  0.5) *
+                2;
 
               const y =
-                ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+                ((e.clientY - rect.top) /
+                  rect.height -
+                  0.5) *
+                2;
 
               setTitleMouse({ x, y });
             }}
             onMouseLeave={() => {
-              setTitleMouse({ x: 0, y: 0 });
+              setTitleMouse({
+                x: 0,
+                y: 0
+              });
             }}
             style={{
               transform: `
                 perspective(1200px)
                 rotateY(${titleMouse.x * 2}deg)
                 rotateX(${titleMouse.y * -2}deg)
-              `,
+              `
             }}
           >
             <button
               type="button"
               className="view-more-close"
-              onClick={() => setIsViewMoreOpen(false)}
+              onClick={() =>
+                setIsViewMoreOpen(false)
+              }
               aria-label="Close"
             >
               ×

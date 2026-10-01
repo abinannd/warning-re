@@ -1,0 +1,809 @@
+.tracking-page {
+
+  min-height: 100vh;
+
+  width: 100vw;
+
+  box-sizing: border-box;
+
+  background: #07111F;
+
+  color: #ffffff;
+
+  padding: 35px 45px;
+
+  font-family: inherit;
+
+}
+
+
+/* =========================
+
+   HEADER
+
+   ========================= */
+
+.tracking-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  margin-bottom: 35px;
+
+}
+
+.tracking-title {
+
+  font-size: 28px;
+
+  font-weight: 400;
+
+  letter-spacing: 5px;
+
+}
+
+.tracking-subtitle {
+
+  margin-top: 8px;
+
+  font-size: 9px;
+
+  letter-spacing: 3px;
+
+  opacity: 0.45;
+
+}
+
+.tracking-status {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding-top: 8px;
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  opacity: 0.65;
+
+}
+
+.status-dot {
+
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #7CFFB2;
+
+  box-shadow: 0 0 10px rgba(124, 255, 178, 0.7);
+
+}
+
+
+/* =========================
+
+   MAIN
+
+   ========================= */
+
+.tracking-content {
+
+  width: 100%;
+
+}
+
+
+/* =========================
+
+   TOP SECTION
+
+   ========================= */
+
+.tracking-top-section {
+
+  display: grid;
+
+  grid-template-columns:
+
+    minmax(190px, 0.8fr)
+
+    minmax(420px, 2.4fr)
+
+    minmax(220px, 0.9fr);
+
+  gap: 16px;
+
+  width: 100%;
+
+}
+
+
+/* =========================
+
+   GLASS PANELS
+
+   ========================= */
+
+.tracking-panel {
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  border-radius: 18px;
+
+  background:
+
+    linear-gradient(
+
+      145deg,
+
+      rgba(255, 255, 255, 0.045),
+
+      rgba(255, 255, 255, 0.018)
+
+    );
+
+  backdrop-filter: blur(18px);
+
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* =========================
+
+   PANEL LABEL
+
+   ========================= */
+
+.panel-label {
+
+  font-size: 9px;
+
+  letter-spacing: 3px;
+
+  opacity: 0.5;
+
+  margin-bottom: 20px;
+
+}
+
+
+/* =========================
+
+   LOCATION
+
+   ========================= */
+
+.location-panel {
+
+  padding: 22px;
+
+  min-height: 560px;
+
+}
+
+.placeholder-field {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  min-height: 52px;
+
+  padding: 0 15px;
+
+  margin-bottom: 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  opacity: 0.7;
+
+  transition:
+
+    background 0.3s ease,
+
+    border-color 0.3s ease,
+
+    transform 0.3s ease;
+
+}
+
+.placeholder-field:hover {
+
+  background: rgba(255, 255, 255, 0.045);
+
+  border-color: rgba(255, 255, 255, 0.14);
+
+  transform: translateY(-1px);
+
+}
+
+/* =========================
+
+   LOCATION DROPDOWN
+
+   ========================= */
+
+.location-field-group {
+
+  position: relative;
+
+  margin-bottom: 18px;
+
+}
+
+.location-field-label {
+
+  margin-bottom: 8px;
+
+  font-size: 8px;
+
+  letter-spacing: 2px;
+
+  opacity: 0.45;
+
+}
+
+.state-dropdown {
+
+  position: relative;
+
+  width: 100%;
+
+}
+
+
+.state-dropdown-trigger {
+
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+
+    linear-gradient(
+
+      135deg,
+
+      rgba(255, 255, 255, 0.075),
+
+      rgba(255, 255, 255, 0.035)
+
+    );
+
+  backdrop-filter: blur(12px);
+
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  color: white;
+
+  padding: 8px 42px;
+
+  font-family: inherit;
+
+  font-size: 1rem;
+
+  font-weight: 400;
+
+  border-radius: 50px;
+
+  margin-top: 2.5rem;
+
+  cursor: pointer;
+
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  width: 300px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.1em;
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+
+    0 8px 25px rgba(0, 0, 0, 0.12);
+
+}
+
+.state-dropdown-trigger:hover,
+
+.state-dropdown-trigger.open {
+
+  background:
+
+    linear-gradient(
+
+      135deg,
+
+      rgba(255, 255, 255, 0.12),
+
+      rgba(255, 255, 255, 0.055)
+
+    );
+
+  border-color: rgba(255, 255, 255, 0.28);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+
+    0 12px 30px rgba(156, 177, 255, 0.16);
+
+}
+
+/* Dropdown arrow */
+
+.dropdown-arrow {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-105%);
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+
+  line-height: 1;
+  pointer-events: none;
+}
+
+
+/* Dropdown menu */
+
+.state-dropdown-menu {
+
+  position: relative;
+
+  top: calc(100% + 8px);
+
+  left: 0;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  z-index: 100;
+
+  padding: 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 16px;
+
+  background: rgba(7, 17, 31, 0.97);
+
+  backdrop-filter: blur(20px);
+
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+
+    0 15px 40px rgba(0, 0, 0, 0.35);
+
+}
+
+
+/* Search */
+
+.state-search-wrapper {
+
+  display: flex;
+
+  align-items: center;
+
+  height: 40px;
+
+  padding: 0 11px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+}
+
+.state-search-icon {
+
+  margin-right: 8px;
+
+  font-size: 17px;
+
+  opacity: 0.45;
+
+}
+
+.state-search {
+
+  width: 100%;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  letter-spacing: 1px;
+
+}
+
+.state-search::placeholder {
+
+  color: rgba(255, 255, 255, 0.35);
+
+}
+
+
+/* Options */
+
+.state-options {
+
+  max-height: 210px;
+
+  margin-top: 6px;
+
+  overflow-y: auto;
+
+}
+
+.state-option {
+
+  width: 100%;
+
+  min-height: 40px;
+
+  padding: 0 11px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.7);
+
+  font-family: inherit;
+
+  font-size: 9px;
+
+  letter-spacing: 1px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+
+    background 0.2s ease,
+
+    color 0.2s ease;
+
+}
+
+.state-option:hover {
+
+  background: rgba(255, 255, 255, 0.07);
+
+  color: #ffffff;
+
+}
+
+.state-option.selected {
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #ffffff;
+
+}
+
+.state-check {
+
+  font-size: 13px;
+
+  opacity: 0.8;
+
+}
+
+.no-state-results {
+
+  padding: 14px 10px;
+
+  text-align: center;
+
+  font-size: 9px;
+
+  letter-spacing: 1px;
+
+  opacity: 0.35;
+
+}
+
+
+/* Unsupported state warning */
+
+.state-warning {
+
+  margin-top: 8px;
+
+  padding: 8px 10px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 70, 70, 0.06);
+
+  border: 1px solid rgba(255, 70, 70, 0.18);
+
+  color: #ff7373;
+
+  font-size: 8px;
+
+  line-height: 1.4;
+
+  letter-spacing: 0.7px;
+
+}
+
+
+/* =========================
+
+   MAP
+
+   ========================= */
+
+.map-panel {
+
+  position: relative;
+
+  min-height: 560px;
+
+  padding: 22px;
+
+}
+
+.map-placeholder {
+
+  position: absolute;
+
+  left: 22px;
+
+  right: 22px;
+
+  top: 55px;
+
+  bottom: 22px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.12);
+
+  font-size: 10px;
+
+  letter-spacing: 4px;
+
+  opacity: 0.25;
+
+}
+
+
+/* =========================
+
+   DISEASE
+
+   ========================= */
+
+.disease-panel {
+
+  min-height: 560px;
+
+  padding: 22px;
+
+}
+
+.info-section {
+
+  margin-top: 30px;
+
+}
+
+.info-label {
+
+  margin-bottom: 10px;
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  opacity: 0.45;
+
+}
+
+.info-placeholder {
+
+  min-height: 90px;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.02);
+
+  font-size: 10px;
+
+  opacity: 0.45;
+
+}
+
+.cases-placeholder {
+
+  font-size: 28px;
+
+  font-weight: 300;
+
+  opacity: 0.7;
+
+}
+
+
+/* =========================
+
+   PRECAUTIONS
+
+   ========================= */
+
+.precautions-panel {
+
+  margin-top: 16px;
+
+  min-height: 130px;
+
+  padding: 22px;
+
+}
+
+.precautions-placeholder {
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  opacity: 0.4;
+
+}
+
+
+/* =========================
+
+   CAROUSEL
+
+   ========================= */
+
+.carousel-section {
+
+  width: 100%;
+
+  margin-top: 16px;
+
+}
+
+.carousel-placeholder {
+
+  min-height: 220px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  font-size: 10px;
+
+  letter-spacing: 4px;
+
+  opacity: 0.3;
+
+}
+
+
+/* =========================
+
+   RESPONSIVE
+
+   ========================= */
+
+@media (max-width: 1000px) {
+
+  .tracking-top-section {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .location-panel,
+
+  .map-panel,
+
+  .disease-panel {
+
+    min-height: auto;
+
+  }
+
+  .map-panel {
+
+    min-height: 500px;
+
+  }
+
+}

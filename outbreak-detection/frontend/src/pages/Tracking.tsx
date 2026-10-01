@@ -1,6 +1,7 @@
-import { useState } from 'react';
 import './Tracking.css';
-
+import { useEffect, useMemo, useState } from "react";
+import { getDistricts, getTaluks } from "../api/geography";
+import type { District, Taluk } from "../types/geography";
 const STATES = [
   'Kerala',
   'Tamil Nadu',
@@ -26,37 +27,128 @@ export default function Tracking() {
     setStateSearch('');
   };
 
-const [district, setDistrict] = useState('All Districts');
-const [isDistrictOpen, setIsDistrictOpen] = useState(false);
-const [districtSearch, setDistrictSearch] = useState('');
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [taluks, setTaluks] = useState<Taluk[]>([]);
 
-const DISTRICTS = [
-  'All Districts',
-  'Thiruvananthapuram',
-  'Kollam',
-  'Pathanamthitta',
-  'Alappuzha',
-  'Kottayam',
-  'Idukki',
-  'Ernakulam',
-  'Thrissur',
-  'Palakkad',
-  'Malappuram',
-  'Kozhikode',
-  'Wayanad',
-  'Kannur',
-  'Kasaragod'
-];
+  const [selectedDistrict, setSelectedDistrict] =
+    useState("All Districts");
 
-const filteredDistricts = DISTRICTS.filter((item) =>
-  item.toLowerCase().includes(districtSearch.toLowerCase())
-);
+  const [selectedTaluk, setSelectedTaluk] =
+    useState("All Taluks");
 
-const handleDistrictSelect = (selectedDistrict: string) => {
-  setDistrict(selectedDistrict);
-  setIsDistrictOpen(false);
-  setDistrictSearch('');
-};
+  const [isDistrictOpen, setIsDistrictOpen] = useState(false);
+  const [isTalukOpen, setIsTalukOpen] = useState(false);
+
+  const [districtSearch, setDistrictSearch] = useState("");
+  const [talukSearch, setTalukSearch] = useState("");
+
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingTaluks, setLoadingTaluks] = useState(false);
+
+  // Load districts when Kerala is selected
+  useEffect(() => {
+    if (state !== "Kerala") {
+      setDistricts([]);
+      setTaluks([]);
+      setSelectedDistrict("All Districts");
+      setSelectedTaluk("All Taluks");
+      return;
+    }
+
+    const loadDistricts = async () => {
+      try {
+        setLoadingDistricts(true);
+
+        const data = await getDistricts();
+        setDistricts(data);
+      } catch (error) {
+        console.error("Failed to load districts:", error);
+        setDistricts([]);
+      } finally {
+        setLoadingDistricts(false);
+      }
+    };
+
+    loadDistricts();
+  }, [state]);
+
+  // Load taluks when district changes
+  useEffect(() => {
+    if (
+      state !== "Kerala" ||
+      selectedDistrict === "All Districts"
+    ) {
+      setTaluks([]);
+      setSelectedTaluk("All Taluks");
+      return;
+    }
+
+    const district = districts.find(
+      (item) => item.name === selectedDistrict
+    );
+
+    if (!district) {
+      setTaluks([]);
+      setSelectedTaluk("All Taluks");
+      return;
+    }
+
+    const loadTaluks = async () => {
+      try {
+        setLoadingTaluks(true);
+
+        const data = await getTaluks({
+          district_id: district.id,
+        });
+
+        setTaluks(data);
+      } catch (error) {
+        console.error("Failed to load taluks:", error);
+        setTaluks([]);
+      } finally {
+        setLoadingTaluks(false);
+      }
+    };
+
+    loadTaluks();
+  }, [state, selectedDistrict, districts]);
+
+  // Search filtering
+  const filteredDistricts = useMemo(() => {
+    return districts.filter((item) =>
+      item.name
+        .toLowerCase()
+        .includes(districtSearch.toLowerCase())
+    );
+  }, [districts, districtSearch]);
+
+  const filteredTaluks = useMemo(() => {
+    return taluks.filter((item) =>
+      item.name
+        .toLowerCase()
+        .includes(talukSearch.toLowerCase())
+    );
+  }, [taluks, talukSearch]);
+
+  // District selection
+  const handleDistrictSelect = (districtName: string) => {
+    setSelectedDistrict(districtName);
+    setSelectedTaluk("All Taluks");
+
+    setDistrictSearch("");
+    setTalukSearch("");
+
+    setIsDistrictOpen(false);
+    setIsTalukOpen(false);
+  };
+
+  // Taluk selection
+  const handleTalukSelect = (talukName: string) => {
+    setSelectedTaluk(talukName);
+
+    setTalukSearch("");
+    setIsTalukOpen(false);
+  };
 
   return (
     <div className="tracking-page">
@@ -179,104 +271,249 @@ const handleDistrictSelect = (selectedDistrict: string) => {
             </div>
 
 
-            {/* DISTRICT - placeholder for Step 3 */}
             {/* DISTRICT */}
-<div className="location-field-group">
+            <div className="location-field-group">
 
-  <div className="location-field-label">
-    DISTRICT
-  </div>
+              <div className="location-field-label">
+                DISTRICT
+              </div>
 
-  <div className="state-dropdown">
+              <div className="state-dropdown">
 
-    <button
-      type="button"
-      className={`state-dropdown-trigger ${
-        isDistrictOpen ? 'open' : ''
-      }`}
-      onClick={() =>
-        setIsDistrictOpen((previous) => !previous)
-      }
-    >
-      <span>{district}</span>
+                <button
+                  type="button"
+                  className={`state-dropdown-trigger ${
+                    isDistrictOpen ? 'open' : ''
+                  }`}
+                  onClick={() =>
+                    setIsDistrictOpen((previous) => !previous)
+                  }
+                >
+                  <span>{selectedDistrict}</span>
 
-      <span className="dropdown-arrow">
-        {isDistrictOpen ? '⌃' : '⌄'}
-      </span>
-    </button>
-
-    {isDistrictOpen && (
-      <div className="state-dropdown-menu">
-
-        <div className="state-search-wrapper">
-          <span className="state-search-icon">
-            ⌕
-          </span>
-
-          <input
-            type="text"
-            value={districtSearch}
-            onChange={(event) =>
-              setDistrictSearch(event.target.value)
-            }
-            placeholder="Search..."
-            className="state-search"
-            autoFocus
-          />
-        </div>
-
-        <div className="state-options">
-
-          {filteredDistricts.length > 0 ? (
-
-            filteredDistricts.map((item) => (
-
-              <button
-                type="button"
-                key={item}
-                className={`state-option ${
-                  district === item
-                    ? 'selected'
-                    : ''
-                }`}
-                onClick={() =>
-                  handleDistrictSelect(item)
-                }
-              >
-
-                <span>{item}</span>
-
-                {district === item && (
-                  <span className="state-check">
-                    ✓
+                  <span className="dropdown-arrow">
+                    {isDistrictOpen ? '⌃' : '⌄'}
                   </span>
+                </button>
+
+                {isDistrictOpen && (
+                  <div className="state-dropdown-menu">
+
+                    <div className="state-search-wrapper">
+                      <span className="state-search-icon">
+                        ⌕
+                      </span>
+
+                      <input
+                        type="text"
+                        value={districtSearch}
+                        onChange={(event) =>
+                          setDistrictSearch(event.target.value)
+                        }
+                        placeholder="Search..."
+                        className="state-search"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="state-options">
+
+                      {loadingDistricts ? (
+                        <div className="no-state-results">
+                          Loading districts...
+                        </div>
+                      ) : filteredDistricts.length > 0 ? (
+
+                        <>
+                          <button
+                            type="button"
+                            className={`state-option ${
+                              selectedDistrict === "All Districts"
+                                ? 'selected'
+                                : ''
+                            }`}
+                            onClick={() =>
+                              handleDistrictSelect("All Districts")
+                            }
+                          >
+                            <span>All Districts</span>
+
+                            {selectedDistrict === "All Districts" && (
+                              <span className="state-check">
+                                ✓
+                              </span>
+                            )}
+                          </button>
+
+                          {filteredDistricts.map((item) => (
+
+                            <button
+                              type="button"
+                              key={item.id}
+                              className={`state-option ${
+                                selectedDistrict === item.name
+                                  ? 'selected'
+                                  : ''
+                              }`}
+                              onClick={() =>
+                                handleDistrictSelect(item.name)
+                              }
+                            >
+
+                              <span>{item.name}</span>
+
+                              {selectedDistrict === item.name && (
+                                <span className="state-check">
+                                  ✓
+                                </span>
+                              )}
+
+                            </button>
+
+                          ))}
+                        </>
+
+                      ) : (
+
+                        <div className="no-state-results">
+                          No districts found
+                        </div>
+
+                      )}
+
+                    </div>
+
+                  </div>
                 )}
 
-              </button>
+              </div>
 
-            ))
-
-          ) : (
-
-            <div className="no-state-results">
-              No districts found
             </div>
 
-          )}
 
-        </div>
+            {/* TALUK */}
+            <div className="location-field-group">
 
-      </div>
-    )}
+              <div className="location-field-label">
+                TALUK
+              </div>
 
-  </div>
+              <div className="state-dropdown">
 
-</div>
+                <button
+                  type="button"
+                  className={`state-dropdown-trigger ${
+                    isTalukOpen ? 'open' : ''
+                  }`}
+                  onClick={() =>
+                    setIsTalukOpen((previous) => !previous)
+                  }
+                >
+                  <span>{selectedTaluk}</span>
 
+                  <span className="dropdown-arrow">
+                    {isTalukOpen ? '⌃' : '⌄'}
+                  </span>
+                </button>
 
-            {/* TALUK - placeholder for Step 4 */}
-            <div className="placeholder-field">
-              TALUK
+                {isTalukOpen && (
+                  <div className="state-dropdown-menu">
+
+                    <div className="state-search-wrapper">
+                      <span className="state-search-icon">
+                        ⌕
+                      </span>
+
+                      <input
+                        type="text"
+                        value={talukSearch}
+                        onChange={(event) =>
+                          setTalukSearch(event.target.value)
+                        }
+                        placeholder="Search..."
+                        className="state-search"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="state-options">
+
+                      {loadingTaluks ? (
+                        <div className="no-state-results">
+                          Loading taluks...
+                        </div>
+                      ) : selectedDistrict === "All Districts" ? (
+
+                        <div className="no-state-results">
+                          Select a district first
+                        </div>
+
+                      ) : filteredTaluks.length > 0 ? (
+
+                        <>
+                          <button
+                            type="button"
+                            className={`state-option ${
+                              selectedTaluk === "All Taluks"
+                                ? 'selected'
+                                : ''
+                            }`}
+                            onClick={() =>
+                              handleTalukSelect("All Taluks")
+                            }
+                          >
+                            <span>All Taluks</span>
+
+                            {selectedTaluk === "All Taluks" && (
+                              <span className="state-check">
+                                ✓
+                              </span>
+                            )}
+                          </button>
+
+                          {filteredTaluks.map((item) => (
+
+                            <button
+                              type="button"
+                              key={item.id}
+                              className={`state-option ${
+                                selectedTaluk === item.name
+                                  ? 'selected'
+                                  : ''
+                              }`}
+                              onClick={() =>
+                                handleTalukSelect(item.name)
+                              }
+                            >
+
+                              <span>{item.name}</span>
+
+                              {selectedTaluk === item.name && (
+                                <span className="state-check">
+                                  ✓
+                                </span>
+                              )}
+
+                            </button>
+
+                          ))}
+                        </>
+
+                      ) : (
+
+                        <div className="no-state-results">
+                          No taluks found
+                        </div>
+
+                      )}
+
+                    </div>
+
+                  </div>
+                )}
+
+              </div>
+
             </div>
 
           </div>

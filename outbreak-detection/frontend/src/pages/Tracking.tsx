@@ -1,7 +1,21 @@
 import './Tracking.css';
 import { useEffect, useMemo, useState } from "react";
-import { getDistricts, getTaluks } from "../api/geography";
-import type { District, Taluk } from "../types/geography";
+import {
+  getDistricts,
+  getTaluks,
+  getKeralaGeometry
+} from "../api/geography";
+import { getDashboardMap } from "../api/dashboard";
+import { getClusters } from "../api/clusters";
+import KeralaMap from "../components/map/KeralaMap";
+import type { MapData } from "../types/dashboard";
+import type {
+  District,
+  Taluk,
+  GeoJSONFeatureCollection
+} from "../types/geography";
+import type { Cluster } from "../types/clusters";
+
 const STATES = [
   'Kerala',
   'Tamil Nadu',
@@ -45,6 +59,18 @@ export default function Tracking() {
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingTaluks, setLoadingTaluks] = useState(false);
 
+  const [mapData, setMapData] = useState<MapData | null>(null);
+  const [geometry, setGeometry] =
+    useState<GeoJSONFeatureCollection | null>(null);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
+  const [mapLoading, setMapLoading] = useState(true);
+
+  const [selectedDistrictId, setSelectedDistrictId] =
+    useState<string | null>(null);
+
+  const [selectedTalukId, setSelectedTalukId] =
+    useState<string | null>(null);
+
   // Load districts when Kerala is selected
   useEffect(() => {
     if (state !== "Kerala") {
@@ -52,6 +78,8 @@ export default function Tracking() {
       setTaluks([]);
       setSelectedDistrict("All Districts");
       setSelectedTaluk("All Taluks");
+      setSelectedDistrictId(null);
+      setSelectedTalukId(null);
       return;
     }
 
@@ -113,6 +141,31 @@ export default function Tracking() {
     loadTaluks();
   }, [state, selectedDistrict, districts]);
 
+  // Load map data
+  useEffect(() => {
+    const loadMapData = async () => {
+      try {
+        setMapLoading(true);
+
+        const [mapRes, geoRes, clustersRes] = await Promise.all([
+          getDashboardMap(),
+          getKeralaGeometry(),
+          getClusters(),
+        ]);
+
+        setMapData(mapRes);
+        setGeometry(geoRes);
+        setClusters(clustersRes);
+      } catch (error) {
+        console.error("Failed to load tracking map:", error);
+      } finally {
+        setMapLoading(false);
+      }
+    };
+
+    loadMapData();
+  }, []);
+
   // Search filtering
   const filteredDistricts = useMemo(() => {
     return districts.filter((item) =>
@@ -135,6 +188,18 @@ export default function Tracking() {
     setSelectedDistrict(districtName);
     setSelectedTaluk("All Taluks");
 
+    const district = districts.find(
+      (item) => item.name === districtName
+    );
+
+    setSelectedDistrictId(
+      districtName === "All Districts"
+        ? null
+        : district?.id ?? null
+    );
+
+    setSelectedTalukId(null);
+
     setDistrictSearch("");
     setTalukSearch("");
 
@@ -146,8 +211,52 @@ export default function Tracking() {
   const handleTalukSelect = (talukName: string) => {
     setSelectedTaluk(talukName);
 
+    const taluk = taluks.find(
+      (item) => item.name === talukName
+    );
+
+    setSelectedTalukId(
+      talukName === "All Taluks"
+        ? null
+        : taluk?.id ?? null
+    );
+
     setTalukSearch("");
     setIsTalukOpen(false);
+  };
+
+  const handleMapDistrictSelect = (districtId: string) => {
+    const district = districts.find(
+      (item) => item.id === districtId
+    );
+
+    if (!district) return;
+
+    setSelectedDistrictId(district.id);
+    setSelectedDistrict(district.name);
+
+    setSelectedTalukId(null);
+    setSelectedTaluk("All Taluks");
+
+    setDistrictSearch("");
+    setTalukSearch("");
+  };
+
+  const handleMapTalukSelect = (talukId: string) => {
+    const taluk = mapData?.taluks.find(
+      (item) => item.id === talukId
+    );
+
+    if (!taluk) return;
+
+    setSelectedTalukId(taluk.id);
+    setSelectedTaluk(taluk.name);
+
+    setSelectedDistrictId(taluk.districtId);
+    setSelectedDistrict(taluk.districtName);
+
+    setDistrictSearch("");
+    setTalukSearch("");
   };
 
   return (
@@ -525,9 +634,24 @@ export default function Tracking() {
               MAP
             </div>
 
-            <div className="map-placeholder">
-              MAP
-            </div>
+            {mapLoading ? (
+              <div className="map-placeholder">
+                LOADING MAP
+              </div>
+            ) : (
+              <KeralaMap
+                mapData={mapData}
+                keralaGeometry={geometry}
+                clusters={clusters}
+                selectedDistrictId={selectedDistrictId}
+                selectedTalukId={selectedTalukId}
+                onDistrictSelect={handleMapDistrictSelect}
+                onTalukSelect={handleMapTalukSelect}
+                onClusterSelect={(id) =>
+                  console.log("Cluster selected:", id)
+                }
+              />
+            )}
           </div>
 
 

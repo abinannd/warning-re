@@ -26,6 +26,36 @@ const STATES = [
   'Telangana'
 ];
 
+const DISEASE_PRECAUTIONS: Record<string, string[]> = {
+  dengue: [
+    "Remove stagnant water around homes and public areas.",
+    "Use mosquito repellents and protective clothing.",
+    "Keep water storage containers covered.",
+    "Seek medical attention if warning symptoms develop."
+  ],
+
+  malaria: [
+    "Use mosquito nets and mosquito repellents.",
+    "Avoid mosquito exposure, especially during evening and night.",
+    "Remove stagnant water where possible.",
+    "Seek medical attention if fever or other symptoms persist."
+  ],
+
+  cholera: [
+    "Drink safe and properly treated water.",
+    "Wash hands thoroughly before eating and after using the toilet.",
+    "Avoid contaminated food and water.",
+    "Maintain proper sanitation and waste disposal."
+  ],
+
+  default: [
+    "Maintain good personal hygiene.",
+    "Use safe drinking water and properly handled food.",
+    "Follow local public-health advisories.",
+    "Seek medical attention if symptoms develop or worsen."
+  ]
+};
+
 export default function Tracking() {
   const [state, setState] = useState('Kerala');
   const [isStateOpen, setIsStateOpen] = useState(false);
@@ -234,6 +264,21 @@ export default function Tracking() {
       (cluster) => cluster.id === selectedClusterId
     ) ?? null;
   }, [clusters, selectedClusterId]);
+
+  const precautions = useMemo(() => {
+  if (!selectedCluster) {
+    return DISEASE_PRECAUTIONS.default;
+  }
+
+  const diseaseKey = selectedCluster.disease
+    .toLowerCase()
+    .trim();
+
+  return (
+    DISEASE_PRECAUTIONS[diseaseKey] ??
+    DISEASE_PRECAUTIONS.default
+  );
+}, [selectedCluster]);
 
   // District selection
   const handleDistrictSelect = (districtName: string) => {
@@ -783,14 +828,35 @@ export default function Tracking() {
 
         {/* Precautions */}
         <section className="precautions-panel tracking-panel">
-          <div className="panel-label">
-            BASIC PRECAUTIONS &amp; MEASURES TO TAKE
-          </div>
+  <div className="panel-label">
+    BASIC PRECAUTIONS &amp; MEASURES TO TAKE
+  </div>
 
-          <div className="precautions-placeholder">
-            Advisory information will appear here.
-          </div>
-        </section>
+  <div className="precautions-content">
+    {selectedCluster && (
+      <div className="precautions-disease">
+        FOR {selectedCluster.disease.toUpperCase()}
+      </div>
+    )}
+
+    <div className="precautions-list">
+      {precautions.map((precaution, index) => (
+        <div
+          key={index}
+          className="precaution-item"
+        >
+          <span className="precaution-number">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+
+          <span className="precaution-text">
+            {precaution}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
 
         {/* Carousel */}

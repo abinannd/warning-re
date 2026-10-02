@@ -479,9 +479,13 @@ def get_clusters(
         lat = safe_float(grp["latitude"].mean())
         lon = safe_float(grp["longitude"].mean())
         total_cases_raw = cache["p3"]
+        window_start = date_max - timedelta(days=7)
+        window_end = date_max - timedelta(days=1)
         tc_filter = total_cases_raw[
             (total_cases_raw["disease"].str.lower() == disease_.lower()) &
-            (total_cases_raw["taluk"].isin(taluks))
+            (total_cases_raw["taluk"].isin(taluks)) &
+            (total_cases_raw["date"] >= window_start) &
+            (total_cases_raw["date"] <= window_end)
         ]["cases"].sum()
 
         intensity = safe_float(grp["outbreak_intensity"].mean()) or 0.0
@@ -524,9 +528,13 @@ def get_cluster_by_id(cluster_id: str):
     lon = safe_float(grp["longitude"].mean())
     intensity = safe_float(grp["outbreak_intensity"].mean()) or 0.0
 
+    window_start = date_max - timedelta(days=7)
+    window_end = date_max - timedelta(days=1)
     tc_filter = cache["p3"][
         (cache["p3"]["disease"].str.lower() == disease_.lower()) &
-        (cache["p3"]["taluk"].isin(taluks))
+        (cache["p3"]["taluk"].isin(taluks)) &
+        (cache["p3"]["date"] >= window_start) &
+        (cache["p3"]["date"] <= window_end)
     ]["cases"].sum()
 
     return {

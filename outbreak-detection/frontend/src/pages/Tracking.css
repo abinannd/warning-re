@@ -35,6 +35,7 @@
 
 }
 
+
 .tracking-title {
 
   font-size: 28px;
@@ -44,6 +45,7 @@
   letter-spacing: 5px;
 
 }
+
 
 .tracking-subtitle {
 
@@ -56,6 +58,7 @@
   opacity: 0.45;
 
 }
+
 
 .tracking-status {
 
@@ -74,6 +77,7 @@
   opacity: 0.65;
 
 }
+
 
 .status-dot {
 
@@ -138,32 +142,49 @@
 
   box-sizing: border-box;
 
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 
   border-radius: 18px;
 
   background:
-
     linear-gradient(
-
-      145deg,
-
-      rgba(255, 255, 255, 0.045),
-
-      rgba(255, 255, 255, 0.018)
-
+      135deg,
+      rgba(12, 30, 48, 0.82),
+      rgba(12, 55, 54, 0.72)
     );
 
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(16px);
 
-  -webkit-backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(16px);
 
   box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px rgba(0, 0, 0, 0.20);
 
-    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
 
-    0 12px 35px rgba(0, 0, 0, 0.12);
+.tracking-panel:hover {
 
+  transform: translateY(-3px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(18, 40, 62, 0.88),
+      rgba(14, 72, 63, 0.80)
+    );
+
+  border-color: rgba(255, 255, 255, 0.24);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 16px 38px rgba(0, 0, 0, 0.28),
+    0 0 35px rgba(65, 110, 80, 0.10);
 }
 
 
@@ -199,6 +220,7 @@
   min-height: 560px;
 
 }
+
 
 .placeholder-field {
 
@@ -238,6 +260,7 @@
 
 }
 
+
 .placeholder-field:hover {
 
   background: rgba(255, 255, 255, 0.045);
@@ -247,6 +270,7 @@
   transform: translateY(-1px);
 
 }
+
 
 /* =========================
 
@@ -262,6 +286,7 @@
 
 }
 
+
 .location-field-label {
 
   margin-bottom: 8px;
@@ -273,6 +298,7 @@
   opacity: 0.45;
 
 }
+
 
 .state-dropdown {
 
@@ -294,15 +320,10 @@
   justify-content: center;
 
   background:
-
     linear-gradient(
-
       135deg,
-
       rgba(255, 255, 255, 0.075),
-
       rgba(255, 255, 255, 0.035)
-
     );
 
   backdrop-filter: blur(12px);
@@ -336,27 +357,21 @@
   letter-spacing: 0.1em;
 
   box-shadow:
-
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-
     0 8px 25px rgba(0, 0, 0, 0.12);
 
 }
+
 
 .state-dropdown-trigger:hover,
 
 .state-dropdown-trigger.open {
 
   background:
-
     linear-gradient(
-
       135deg,
-
       rgba(255, 255, 255, 0.12),
-
       rgba(255, 255, 255, 0.055)
-
     );
 
   border-color: rgba(255, 255, 255, 0.28);
@@ -364,12 +379,11 @@
   transform: translateY(-2px);
 
   box-shadow:
-
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-
     0 12px 30px rgba(156, 177, 255, 0.16);
 
 }
+
 
 /* Dropdown arrow */
 
@@ -445,6 +459,7 @@
 
 }
 
+
 .state-search-icon {
 
   margin-right: 8px;
@@ -454,6 +469,7 @@
   opacity: 0.45;
 
 }
+
 
 .state-search {
 
@@ -475,6 +491,7 @@
 
 }
 
+
 .state-search::placeholder {
 
   color: rgba(255, 255, 255, 0.35);
@@ -493,6 +510,7 @@
   overflow-y: auto;
 
 }
+
 
 .state-option {
 
@@ -534,6 +552,7 @@
 
 }
 
+
 .state-option:hover {
 
   background: rgba(255, 255, 255, 0.07);
@@ -541,6 +560,7 @@
   color: #ffffff;
 
 }
+
 
 .state-option.selected {
 
@@ -550,6 +570,7 @@
 
 }
 
+
 .state-check {
 
   font-size: 13px;
@@ -557,6 +578,7 @@
   opacity: 0.8;
 
 }
+
 
 .no-state-results {
 
@@ -614,6 +636,7 @@
 
 }
 
+
 .map-placeholder {
 
   position: absolute;
@@ -661,11 +684,80 @@
 
 }
 
+
+/* ================================
+   DISEASE VALUE BOX
+   Example: dengue
+   ================================ */
+
+.placeholder-field {
+
+  min-height: 56px;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  font-weight: 600;
+
+  display: flex;
+
+  align-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
+
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+.placeholder-field:hover {
+
+  transform: translateY(-2px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.10),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border-color: rgba(255, 255, 255, 0.22);
+
+  box-shadow:
+    0 8px 22px rgba(156, 177, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+
+/* ================================
+   INFO SECTIONS
+   ================================ */
+
 .info-section {
 
   margin-top: 30px;
 
 }
+
+
+/* Label stays outside the glass box */
 
 .info-label {
 
@@ -679,6 +771,12 @@
 
 }
 
+
+/* ================================
+   INFO VALUE BOX
+   Example: Chavakkad
+   ================================ */
+
 .info-placeholder {
 
   min-height: 90px;
@@ -687,19 +785,90 @@
 
   box-sizing: border-box;
 
+  font-weight: 600;
+
+  display: flex;
+
+  align-items: center;
+
   border: 1px solid rgba(255, 255, 255, 0.08);
 
   border-radius: 11px;
 
-  background: rgba(255, 255, 255, 0.02);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.015)
+    );
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
 
   font-size: 10px;
 
-  opacity: 0.45;
+  opacity: 0.65;
 
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
 }
 
+
+.info-placeholder:hover {
+
+  transform: translateY(-2px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.095),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border-color: rgba(255, 255, 255, 0.20);
+
+  box-shadow:
+    0 8px 22px rgba(156, 177, 255, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+
+/* ================================
+   CASES BOX
+   ================================ */
+
 .cases-placeholder {
+
+  min-height: 90px;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  font-weight: 600;
+
+  display: flex;
+
+  align-items: center;
+
+  border: 1px solid rgba(95, 49, 49, 0.08);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(230, 174, 6, 0.045),
+      rgba(255, 255, 255, 0.015)
+    );
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
 
   font-size: 28px;
 
@@ -707,6 +876,30 @@
 
   opacity: 0.7;
 
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+.cases-placeholder:hover {
+
+  transform: translateY(-2px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.095),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border-color: rgba(255, 255, 255, 0.20);
+
+  box-shadow:
+    0 8px 22px rgba(156, 177, 255, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 
@@ -716,15 +909,201 @@
 
    ========================= */
 
+
+/* =================================
+   PRECAUTIONS PANEL
+   ================================= */
+
 .precautions-panel {
 
-  margin-top: 16px;
+  position: relative;
 
-  min-height: 130px;
+  min-height: 260px;
 
   padding: 22px;
 
+  background:
+    linear-gradient(
+      135deg,
+      rgba(12, 30, 48, 0.82),
+      rgba(12, 55, 54, 0.72)
+    );
+
+  backdrop-filter: blur(16px);
+
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  border-radius: 18px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px rgba(0, 0, 0, 0.20);
+
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
 }
+
+
+.precautions-panel:hover {
+
+  transform: translateY(-3px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(18, 40, 62, 0.88),
+      rgba(14, 72, 63, 0.80)
+    );
+
+  border-color: rgba(255, 255, 255, 0.24);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 16px 38px rgba(0, 0, 0, 0.28),
+    0 0 35px rgba(65, 110, 80, 0.10);
+}
+
+
+/* =================================
+   PRECAUTIONS CONTENT
+   ================================= */
+
+.precautions-content {
+
+  margin-top: 22px;
+
+}
+
+
+.precautions-disease {
+
+  margin-bottom: 16px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  color: rgba(255, 255, 255, 0.58);
+
+}
+
+
+/* =================================
+   PRECAUTION LIST
+   ================================= */
+
+.precautions-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+}
+
+
+/* Individual glass row */
+
+.precaution-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+
+  min-height: 48px;
+
+  padding: 10px 14px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 11px;
+
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+.precaution-item:hover {
+
+  transform: translateX(4px);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.095),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  border-color: rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 7px 20px rgba(0, 0, 0, 0.16);
+}
+
+
+/* =================================
+   NUMBER
+   ================================= */
+
+.precaution-number {
+
+  min-width: 28px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+
+  color: rgba(180, 220, 190, 0.65);
+
+}
+
+
+/* =================================
+   TEXT
+   ================================= */
+
+.precaution-text {
+
+  font-size: 13px;
+
+  line-height: 1.55;
+
+  font-weight: 500;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  letter-spacing: 0.15px;
+
+}
+
 
 .precautions-placeholder {
 
@@ -750,6 +1129,7 @@
   margin-top: 16px;
 
 }
+
 
 .carousel-placeholder {
 
@@ -790,6 +1170,7 @@
 
   }
 
+
   .location-panel,
 
   .map-panel,
@@ -799,6 +1180,7 @@
     min-height: auto;
 
   }
+
 
   .map-panel {
 

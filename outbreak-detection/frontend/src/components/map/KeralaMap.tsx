@@ -15,6 +15,7 @@ interface KeralaMapProps {
 
   selectedDistrictId?: string | null;
   selectedTalukId?: string | null;
+  selectedClusterId?: string | null;
 
   onDistrictSelect?: (id: string) => void;
   onTalukSelect?: (id: string) => void;
@@ -131,6 +132,7 @@ export default function KeralaMap({
   clusters,
   selectedDistrictId,
   selectedTalukId,
+  selectedClusterId,
   onDistrictSelect,
   onTalukSelect,
   onClusterSelect
@@ -166,6 +168,7 @@ export default function KeralaMap({
           clusters={clusters}
           selectedDistrictId={selectedDistrictId}
           selectedTalukId={selectedTalukId}
+          selectedClusterId={selectedClusterId}
           onDistrictSelect={onDistrictSelect}
           onTalukSelect={onTalukSelect}
           onClusterSelect={onClusterSelect}

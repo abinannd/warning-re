@@ -71,6 +71,9 @@ export default function Tracking() {
   const [selectedTalukId, setSelectedTalukId] =
     useState<string | null>(null);
 
+  const [selectedClusterId, setSelectedClusterId] =
+    useState<string | null>(null);
+
   // Load districts when Kerala is selected
   useEffect(() => {
     if (state !== "Kerala") {
@@ -222,90 +225,100 @@ export default function Tracking() {
     taluks
   ]);
 
+  const selectedCluster = useMemo(() => {
+    if (!selectedClusterId) {
+      return null;
+    }
+
+    return clusters.find(
+      (cluster) => cluster.id === selectedClusterId
+    ) ?? null;
+  }, [clusters, selectedClusterId]);
+
   // District selection
-const handleDistrictSelect = (districtName: string) => {
-  setSelectedDistrict(districtName);
+  const handleDistrictSelect = (districtName: string) => {
+    setSelectedDistrict(districtName);
 
-  const district = districts.find(
-    (item) => item.name === districtName
-  );
-
-  if (districtName === "All Districts") {
-    setSelectedDistrictId(null);
-    setSelectedTalukId(null);
-    setSelectedTaluk("All Taluks");
-  } else {
-    setSelectedDistrictId(district?.id ?? null);
-    setSelectedTalukId(null);
-    setSelectedTaluk("All Taluks");
-  }
-
-  setDistrictSearch("");
-  setTalukSearch("");
-
-  setIsDistrictOpen(false);
-  setIsTalukOpen(false);
-};
-
-// Taluk selection
-const handleTalukSelect = (talukName: string) => {
-  setSelectedTaluk(talukName);
-
-  if (talukName === "All Taluks") {
-    setSelectedTalukId(null);
-  } else {
-    const taluk = taluks.find(
-      (item) => item.name === talukName
+    const district = districts.find(
+      (item) => item.name === districtName
     );
 
-    setSelectedTalukId(taluk?.id ?? null);
-  }
+    if (districtName === "All Districts") {
+      setSelectedDistrictId(null);
+      setSelectedTalukId(null);
+      setSelectedTaluk("All Taluks");
+    } else {
+      setSelectedDistrictId(district?.id ?? null);
+      setSelectedTalukId(null);
+      setSelectedTaluk("All Taluks");
+    }
 
-  setTalukSearch("");
-  setIsTalukOpen(false);
-};
+    setDistrictSearch("");
+    setTalukSearch("");
 
-const handleMapDistrictSelect = (districtId: string) => {
-  console.log("MAP DISTRICT CLICKED:", districtId);
+    setIsDistrictOpen(false);
+    setIsTalukOpen(false);
+  };
 
-  const district = districts.find(
-    (item) => item.id === districtId
-  );
+  // Taluk selection
+  const handleTalukSelect = (talukName: string) => {
+    setSelectedTaluk(talukName);
 
-  console.log("MATCHED DISTRICT:", district);
+    if (talukName === "All Taluks") {
+      setSelectedTalukId(null);
+    } else {
+      const taluk = taluks.find(
+        (item) => item.name === talukName
+      );
 
-  if (!district) return;
+      setSelectedTalukId(taluk?.id ?? null);
+    }
 
-  setSelectedDistrictId(district.id);
-  setSelectedDistrict(district.name);
+    setTalukSearch("");
+    setIsTalukOpen(false);
+  };
 
-  setSelectedTalukId(null);
-  setSelectedTaluk("All Taluks");
+  const handleMapDistrictSelect = (districtId: string) => {
+    console.log("MAP DISTRICT CLICKED:", districtId);
 
-  setDistrictSearch("");
-  setTalukSearch("");
-};
+    const district = districts.find(
+      (item) => item.id === districtId
+    );
 
-const handleMapTalukSelect = (talukId: string) => {
-  console.log("MAP TALUK CLICKED:", talukId);
+    console.log("MATCHED DISTRICT:", district);
 
-  const taluk = mapData?.taluks.find(
-    (item) => item.id === talukId
-  );
+    if (!district) return;
 
-  console.log("MATCHED MAP TALUK:", taluk);
+    setSelectedDistrictId(district.id);
+    setSelectedDistrict(district.name);
 
-  if (!taluk) return;
+    setSelectedTalukId(null);
+    setSelectedTaluk("All Taluks");
 
-  setSelectedTalukId(taluk.id);
-  setSelectedTaluk(taluk.name);
+    setDistrictSearch("");
+    setTalukSearch("");
+  };
 
-  setSelectedDistrictId(taluk.districtId);
-  setSelectedDistrict(taluk.districtName);
+  const handleMapTalukSelect = (talukId: string) => {
+    console.log("MAP TALUK CLICKED:", talukId);
 
-  setDistrictSearch("");
-  setTalukSearch("");
-};
+    const taluk = mapData?.taluks.find(
+      (item) => item.id === talukId
+    );
+
+    console.log("MATCHED MAP TALUK:", taluk);
+
+    if (!taluk) return;
+
+    setSelectedTalukId(taluk.id);
+    setSelectedTaluk(taluk.name);
+
+    setSelectedDistrictId(taluk.districtId);
+    setSelectedDistrict(taluk.districtName);
+
+    setDistrictSearch("");
+    setTalukSearch("");
+  };
 
   return (
     <div className="tracking-page">
@@ -693,10 +706,11 @@ const handleMapTalukSelect = (talukId: string) => {
                 clusters={filteredClusters}
                 selectedDistrictId={selectedDistrictId}
                 selectedTalukId={selectedTalukId}
+                selectedClusterId={selectedClusterId}
                 onDistrictSelect={handleMapDistrictSelect}
                 onTalukSelect={handleMapTalukSelect}
                 onClusterSelect={(id) =>
-                  console.log("Cluster selected:", id)
+                  setSelectedClusterId(id)
                 }
               />
             )}
@@ -710,16 +724,20 @@ const handleMapTalukSelect = (talukId: string) => {
             </div>
 
             <div className="placeholder-field">
-              SELECT DISEASE
+              {selectedCluster
+                ? selectedCluster.disease
+                : "SELECT CLUSTER"}
             </div>
 
             <div className="info-section">
               <div className="info-label">
-                SYMPTOMS
+                HOTSPOT
               </div>
 
               <div className="info-placeholder">
-                General symptoms
+                {selectedCluster
+                  ? selectedCluster.hotspot
+                  : "Select a cluster from the map"}
               </div>
             </div>
 
@@ -729,7 +747,33 @@ const handleMapTalukSelect = (talukId: string) => {
               </div>
 
               <div className="cases-placeholder">
-                --
+                {selectedCluster
+                  ? selectedCluster.totalCases
+                  : "--"}
+              </div>
+            </div>
+
+            <div className="info-section">
+              <div className="info-label">
+                TEMPORAL SIGNAL
+              </div>
+
+              <div className="info-placeholder">
+                {selectedCluster
+                  ? selectedCluster.temporalSignal
+                  : "--"}
+              </div>
+            </div>
+
+            <div className="info-section">
+              <div className="info-label">
+                SPATIAL CONCENTRATION
+              </div>
+
+              <div className="info-placeholder">
+                {selectedCluster
+                  ? selectedCluster.spatialConcentration
+                  : "--"}
               </div>
             </div>
           </div>

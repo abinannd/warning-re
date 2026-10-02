@@ -3,25 +3,41 @@ import type { Cluster } from '../../types/clusters';
 
 interface ClusterLayerProps {
   clusters: Cluster[];
+  selectedClusterId?: string | null;
   onSelect?: (id: string) => void;
 }
 
-export default function ClusterLayer({ clusters, onSelect }: ClusterLayerProps) {
+export default function ClusterLayer({
+  clusters,
+  selectedClusterId,
+  onSelect
+}: ClusterLayerProps) {
   return (
     <>
       {clusters.map((cluster) => {
-        if (!cluster.epicentre || cluster.epicentre.latitude == null || cluster.epicentre.longitude == null) return null;
-        
+        if (
+          !cluster.epicentre ||
+          cluster.epicentre.latitude == null ||
+          cluster.epicentre.longitude == null
+        ) {
+          return null;
+        }
+
+        const isSelected = cluster.id === selectedClusterId;
+
         return (
           <Circle
             key={`cluster-${cluster.id}`}
-            center={[cluster.epicentre.latitude, cluster.epicentre.longitude]}
-            radius={5000} // ~5km radius representation for now
+            center={[
+              cluster.epicentre.latitude,
+              cluster.epicentre.longitude
+            ]}
+            radius={isSelected ? 7000 : 5000}
             pathOptions={{
-              color: '#d32f2f', // Red cluster outline
-              fillColor: '#f44336',
-              fillOpacity: 0.2,
-              weight: 2,
+              color: isSelected ? '#ffffff' : '#d32f2f',
+              fillColor: isSelected ? '#ff5252' : '#f44336',
+              fillOpacity: isSelected ? 0.4 : 0.2,
+              weight: isSelected ? 4 : 2,
             }}
             eventHandlers={{
               click: () => onSelect && onSelect(cluster.id)

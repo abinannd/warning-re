@@ -14,6 +14,7 @@ interface MapLayersProps {
 
   selectedDistrictId?: string | null;
   selectedTalukId?: string | null;
+  selectedClusterId?: string | null;
 
   onDistrictSelect?: (id: string) => void;
   onTalukSelect?: (id: string) => void;
@@ -26,6 +27,7 @@ export default function MapLayers({
   clusters,
   selectedDistrictId,
   selectedTalukId,
+  selectedClusterId,
   onDistrictSelect,
   onTalukSelect,
   onClusterSelect
@@ -59,6 +61,7 @@ export default function MapLayers({
 
       <ClusterLayer
         clusters={clusters}
+        selectedClusterId={selectedClusterId}
         onSelect={onClusterSelect}
       />
     </>

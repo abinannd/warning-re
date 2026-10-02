@@ -183,81 +183,129 @@ export default function Tracking() {
     );
   }, [taluks, talukSearch]);
 
+  const filteredClusters = useMemo(() => {
+    if (!selectedDistrictId && !selectedTalukId) {
+      return clusters;
+    }
+
+    if (selectedTalukId) {
+      const selectedTaluk = taluks.find(
+        (item) => item.id === selectedTalukId
+      );
+
+      if (!selectedTaluk) {
+        return [];
+      }
+
+      return clusters.filter((cluster) =>
+        cluster.taluks.includes(selectedTaluk.name)
+      );
+    }
+
+    if (selectedDistrictId) {
+      const districtTalukNames = taluks
+        .filter((item) => item.districtId === selectedDistrictId)
+        .map((item) => item.name);
+
+      return clusters.filter((cluster) =>
+        cluster.taluks.some((talukName) =>
+          districtTalukNames.includes(talukName)
+        )
+      );
+    }
+
+    return clusters;
+  }, [
+    clusters,
+    selectedDistrictId,
+    selectedTalukId,
+    taluks
+  ]);
+
   // District selection
-  const handleDistrictSelect = (districtName: string) => {
-    setSelectedDistrict(districtName);
-    setSelectedTaluk("All Taluks");
+const handleDistrictSelect = (districtName: string) => {
+  setSelectedDistrict(districtName);
 
-    const district = districts.find(
-      (item) => item.name === districtName
-    );
+  const district = districts.find(
+    (item) => item.name === districtName
+  );
 
-    setSelectedDistrictId(
-      districtName === "All Districts"
-        ? null
-        : district?.id ?? null
-    );
-
+  if (districtName === "All Districts") {
+    setSelectedDistrictId(null);
     setSelectedTalukId(null);
+    setSelectedTaluk("All Taluks");
+  } else {
+    setSelectedDistrictId(district?.id ?? null);
+    setSelectedTalukId(null);
+    setSelectedTaluk("All Taluks");
+  }
 
-    setDistrictSearch("");
-    setTalukSearch("");
+  setDistrictSearch("");
+  setTalukSearch("");
 
-    setIsDistrictOpen(false);
-    setIsTalukOpen(false);
-  };
+  setIsDistrictOpen(false);
+  setIsTalukOpen(false);
+};
 
-  // Taluk selection
-  const handleTalukSelect = (talukName: string) => {
-    setSelectedTaluk(talukName);
+// Taluk selection
+const handleTalukSelect = (talukName: string) => {
+  setSelectedTaluk(talukName);
 
+  if (talukName === "All Taluks") {
+    setSelectedTalukId(null);
+  } else {
     const taluk = taluks.find(
       (item) => item.name === talukName
     );
 
-    setSelectedTalukId(
-      talukName === "All Taluks"
-        ? null
-        : taluk?.id ?? null
-    );
+    setSelectedTalukId(taluk?.id ?? null);
+  }
 
-    setTalukSearch("");
-    setIsTalukOpen(false);
-  };
+  setTalukSearch("");
+  setIsTalukOpen(false);
+};
 
-  const handleMapDistrictSelect = (districtId: string) => {
-    const district = districts.find(
-      (item) => item.id === districtId
-    );
+const handleMapDistrictSelect = (districtId: string) => {
+  console.log("MAP DISTRICT CLICKED:", districtId);
 
-    if (!district) return;
+  const district = districts.find(
+    (item) => item.id === districtId
+  );
 
-    setSelectedDistrictId(district.id);
-    setSelectedDistrict(district.name);
+  console.log("MATCHED DISTRICT:", district);
 
-    setSelectedTalukId(null);
-    setSelectedTaluk("All Taluks");
+  if (!district) return;
 
-    setDistrictSearch("");
-    setTalukSearch("");
-  };
+  setSelectedDistrictId(district.id);
+  setSelectedDistrict(district.name);
 
-  const handleMapTalukSelect = (talukId: string) => {
-    const taluk = mapData?.taluks.find(
-      (item) => item.id === talukId
-    );
+  setSelectedTalukId(null);
+  setSelectedTaluk("All Taluks");
 
-    if (!taluk) return;
+  setDistrictSearch("");
+  setTalukSearch("");
+};
 
-    setSelectedTalukId(taluk.id);
-    setSelectedTaluk(taluk.name);
+const handleMapTalukSelect = (talukId: string) => {
+  console.log("MAP TALUK CLICKED:", talukId);
 
-    setSelectedDistrictId(taluk.districtId);
-    setSelectedDistrict(taluk.districtName);
+  const taluk = mapData?.taluks.find(
+    (item) => item.id === talukId
+  );
 
-    setDistrictSearch("");
-    setTalukSearch("");
-  };
+  console.log("MATCHED MAP TALUK:", taluk);
+
+  if (!taluk) return;
+
+  setSelectedTalukId(taluk.id);
+  setSelectedTaluk(taluk.name);
+
+  setSelectedDistrictId(taluk.districtId);
+  setSelectedDistrict(taluk.districtName);
+
+  setDistrictSearch("");
+  setTalukSearch("");
+};
 
   return (
     <div className="tracking-page">
@@ -642,7 +690,7 @@ export default function Tracking() {
               <KeralaMap
                 mapData={mapData}
                 keralaGeometry={geometry}
-                clusters={clusters}
+                clusters={filteredClusters}
                 selectedDistrictId={selectedDistrictId}
                 selectedTalukId={selectedTalukId}
                 onDistrictSelect={handleMapDistrictSelect}

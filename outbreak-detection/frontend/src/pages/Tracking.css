@@ -1117,44 +1117,54 @@
 
 
 /* =========================
-
-   CAROUSEL
-
+   INFINITE CAROUSEL
    ========================= */
 
 .carousel-section {
-
   width: 100%;
-
   margin-top: 16px;
-
+  overflow: hidden;
 }
 
+.infinite-slider {
+  width: 100%;
+  overflow: hidden;
+}
 
-.carousel-placeholder {
-
-  min-height: 220px;
-
+.infinite-items {
+  width: max-content;
   display: flex;
-
   align-items: center;
 
-  justify-content: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.09);
-
-  border-radius: 18px;
-
-  background: rgba(255, 255, 255, 0.025);
-
-  font-size: 10px;
-
-  letter-spacing: 4px;
-
-  opacity: 0.3;
-
+  animation: infiniteSlide 50s linear infinite;
 }
 
+.infinite-item {
+  width: 350px;
+  height: auto;
+
+  flex-shrink: 0;
+
+  margin: 10px;
+
+  border-radius: 5mm;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+@keyframes infiniteSlide {
+
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+
+}
 
 /* =========================
 

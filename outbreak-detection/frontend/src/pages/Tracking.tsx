@@ -861,10 +861,92 @@ export default function Tracking() {
 
         {/* Carousel */}
         <section className="carousel-section">
-          <div className="carousel-placeholder">
-            INFINITE CAROUSEL
-          </div>
-        </section>
+  <div className="infinite-slider">
+    <div className="infinite-items">
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-1.png`}
+        alt="Surveillance visual 1"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-2.png`}
+        alt="Surveillance visual 2"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-3.png`}
+        alt="Surveillance visual 3"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-4.png`}
+        alt="Surveillance visual 4"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-5.png`}
+        alt="Surveillance visual 5"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-6.png`}
+        alt="Surveillance visual 6"
+        className="infinite-item"
+      />
+
+
+      {/* Duplicate set for seamless infinite scrolling */}
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-1.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-2.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-3.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-4.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-5.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+
+      <img
+        src={`${import.meta.env.BASE_URL}infinite/infinite-6.png`}
+        alt=""
+        aria-hidden="true"
+        className="infinite-item"
+      />
+    </div>
+  </div>
+</section>
 
       </main>
 
